@@ -8,7 +8,7 @@ const isProd = import.meta.env.PROD;
  * Увімкнути локально: SHOW_DRAFTS=1 npm run dev. У production — примусово false.
  */
 export const SHOW_DRAFTS: boolean =
-  !isProd && (import.meta.env.SHOW_DRAFTS === "1" || import.meta.env.SHOW_DRAFTS === "true");
+  !isProd && (process.env.SHOW_DRAFTS === "1" || process.env.SHOW_DRAFTS === "true");
 
 export const BUSINESS = {
   name: "ALTACO",

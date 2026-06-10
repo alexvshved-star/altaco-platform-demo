@@ -71,7 +71,7 @@ const ogImage = m.photos.slab ?? undefined;
         <span aria-current="page">{m.name}</span>
       </nav>
 
-      <p class="caps-label mt-6 text-brass">{m.lineName} · {typeLabel(m.type)}</p>
+      <p class="caps-label mt-6 text-brass-text">{m.lineName} · {typeLabel(m.type)}</p>
       <h1 class="font-serif text-4xl sm:text-5xl mt-2">{m.name}</h1>
 
       <h2 class="sr-only">{t.card.specs}</h2>
@@ -95,7 +95,7 @@ const ogImage = m.photos.slab ?? undefined;
         </div>
       )}
 
-      <p class="font-serif text-3xl text-brass mt-10" data-role="price">{price}</p>
+      <p class="font-serif text-3xl text-brass-deep mt-10" data-role="price">{price}</p>
       <p class="mt-2 text-xs text-muted">{t.card.priceNote}</p>
 
       <div class="mt-8 flex flex-wrap gap-3">

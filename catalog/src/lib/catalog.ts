@@ -16,7 +16,11 @@ import type {
   SlabGroup,
 } from "./types";
 
-const DATA_URL = new URL("../../../data/altaco_materials.json", import.meta.url);
+// DATA_FILE — лише для тестових білдів (test-marketplace) з тимчасовою КОПІЄЮ контракту;
+// канон у production — завжди ../data/altaco_materials.json.
+const DATA_URL = process.env.DATA_FILE
+  ? new URL(`file://${process.env.DATA_FILE}`)
+  : new URL("../../../data/altaco_materials.json", import.meta.url);
 // Фото: файлова система — source of truth (CLAUDE.md №2, PHOTO_GUIDE.md).
 // Лежать у catalog/public/photos/{id}/ і потрапляють у білд як /photos/{id}/...
 const PHOTOS_DIR = new URL("../../public/photos/", import.meta.url);
