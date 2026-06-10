@@ -1,0 +1,19 @@
+---
+// Узагальнений бейдж наявності (PHASE1_BRIEF §2): без точних кількостей.
+import { t } from "../i18n/uk";
+import type { Material } from "../lib/types";
+
+interface Props {
+  material: Material;
+  class?: string;
+}
+
+const { material: m, class: cls = "" } = Astro.props;
+const label = !m.availabilityKnown
+  ? t.card.availabilityUnknown
+  : m.availability === "InStock"
+    ? t.card.inStock
+    : t.card.preOrder;
+---
+
+<span class={`caps-label inline-block bg-ink text-ivory px-3 py-1.5 ${cls}`}>{label}</span>

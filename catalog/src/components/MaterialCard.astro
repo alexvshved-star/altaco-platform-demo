@@ -1,0 +1,47 @@
+---
+// Картка сітки каталогу (макет стор. 8): фото-текстура, бейдж, serif-назва,
+// КАПС-підпис «тип · лінія», золота ціна «від €min».
+import { typeLabel } from "../lib/catalog";
+import { formatPriceFrom } from "../lib/format";
+import { t } from "../i18n/uk";
+import type { Material } from "../lib/types";
+import MaterialImage from "./MaterialImage.astro";
+import AvailabilityBadge from "./AvailabilityBadge.astro";
+
+interface Props {
+  material: Material;
+}
+
+const { material: m } = Astro.props;
+const price = formatPriceFrom(m.priceFromEurM2);
+---
+
+<article
+  class="material-card bg-paper border border-hairline/60 group"
+  data-id={m.id}
+  data-type={m.type}
+  data-line={m.line}
+  data-finish={m.finishes.join(" ")}
+  data-tag={m.tags.join(" ")}
+  data-price={m.priceFromEurM2 ?? ""}
+  data-name={m.name}
+>
+  <a href={m.url} class="block">
+    <div class="relative aspect-[4/3] overflow-hidden">
+      <MaterialImage
+        material={m}
+        variant="detail"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] [&>svg]:h-full [&>svg]:w-full"
+      />
+      <AvailabilityBadge material={m} class="absolute left-3 top-3" />
+      {!m.published && (
+        <span class="caps-label absolute right-3 top-3 bg-brass text-ink px-3 py-1.5">{t.catalog.draftBadge}</span>
+      )}
+    </div>
+    <div class="p-4">
+      <h2 class="font-serif text-xl text-body">{m.name}</h2>
+      <p class="caps-label mt-1 text-muted">{typeLabel(m.type)} · {m.lineName}</p>
+      <p class="mt-3 font-semibold text-brass" data-role="price">{price}</p>
+    </div>
+  </a>
+</article>

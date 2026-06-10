@@ -1,0 +1,26 @@
+---
+// Зображення матеріалу: реальне фото за конвенцією або генерований патерн (Р-07).
+// Плейсхолдер — інлайн SVG у DOM (не data-URI в img), щоб лишатися легким і читабельним.
+import { placeholderSvg } from "../lib/placeholder";
+import type { Material } from "../lib/types";
+
+interface Props {
+  material: Material;
+  /** detail — текстура для сітки; slab — повний сляб для картки. */
+  variant: "detail" | "slab";
+  class?: string;
+  loading?: "lazy" | "eager";
+}
+
+const { material: m, variant, class: cls = "", loading = "lazy" } = Astro.props;
+const src = variant === "detail" ? m.photos.detail : m.photos.slab;
+const alt = [m.name, m.finish, m.slabSize ? `сляб ${m.slabSize.w}×${m.slabSize.h} мм` : null]
+  .filter(Boolean)
+  .join(", ");
+---
+
+{src ? (
+  <img src={src} alt={alt} class={cls} loading={loading} decoding="async" />
+) : (
+  <div class={cls} set:html={placeholderSvg(m.id, m.name)} />
+)}

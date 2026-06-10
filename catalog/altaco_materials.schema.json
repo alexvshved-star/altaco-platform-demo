@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://altaco.example/schema/altaco_materials.schema.json",
+  "title": "ALTACO materials core contract (demo 0.1.0)",
+  "description": "Схема НАПИСАНА під фактичний заморожений демо-контракт data/altaco_materials.json. Це артефакт агента, а не зміна даних. Білд падає, якщо дані не проходять схему (PHASE1_BRIEF §2). Поля майбутнього багатого контракту (slab_groups, qty_slabs тощо) дозволені як опціональні розширення, щоб білд не падав, коли дані виростуть.",
+  "type": "object",
+  "required": ["lines", "materials"],
+  "additionalProperties": true,
+  "properties": {
+    "$schema_version": { "type": "string" },
+    "$comment": { "type": "string" },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "name": { "type": "string", "minLength": 1 },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/material" }
+    },
+    "availability_overlay": { "type": "object" }
+  },
+  "$defs": {
+    "material": {
+      "type": "object",
+      "required": ["id", "name", "type", "line", "price_eur_m2", "published"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "slug-чистий; використовується як /katalog/{id}"
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "line": { "type": "string", "minLength": 1 },
+        "finish": { "type": "string" },
+        "price_eur_m2": { "type": "number", "minimum": 0 },
+        "photo": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "published": { "type": "boolean" },
+
+        "_comment_future": "Опціональні поля майбутнього багатого контракту — дозволені, не обовʼязкові.",
+        "origin": { "type": "string" },
+        "color": { "type": "string" },
+        "finishes": { "type": "array", "items": { "type": "string" } },
+        "thicknesses_mm": { "type": "array", "items": { "type": "number" } },
+        "slab_size_mm": {
+          "type": "object",
+          "properties": { "w": { "type": "number" }, "h": { "type": "number" } }
+        },
+        "applications": { "type": "array", "items": { "type": "string" } },
+        "slab_groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "finish": { "type": "string" },
+              "thickness_mm": { "type": "number" },
+              "batch": { "type": "string" },
+              "price_eur_slab": { "type": "number", "minimum": 0 },
+              "price_eur_m2": { "type": "number", "minimum": 0 },
+              "slab_area_m2": { "type": "number", "minimum": 0 },
+              "qty_slabs": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

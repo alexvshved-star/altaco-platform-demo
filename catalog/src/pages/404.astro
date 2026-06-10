@@ -1,0 +1,13 @@
+---
+import Base from "../layouts/Base.astro";
+import { t } from "../i18n/uk";
+---
+
+<Base title={`Сторінку не знайдено | ${t.site.name}`} description={t.site.description}>
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 py-24 text-center">
+    <p class="caps-label text-brass">404</p>
+    <h1 class="font-serif text-4xl mt-3">Сторінку не знайдено</h1>
+    <p class="mt-4 text-muted">Матеріал відсутній або знятий з публікації.</p>
+    <a href="/" class="caps-label inline-block mt-8 bg-brass text-ink px-6 py-3.5 hover:bg-brass-deep transition-colors">{t.nav.catalog}</a>
+  </section>
+</Base>

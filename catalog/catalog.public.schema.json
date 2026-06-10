@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://altaco.example/schema/catalog.public.schema.json",
+  "title": "ALTACO public catalog feed (/catalog.json)",
+  "description": "Схема публічної проєкції контракту. Тільки published-позиції, БЕЗ внутрішніх полів (qty_slabs, notes_internal, todo_manual, $comment*, availability_overlay). Цей фід їсть консультант Фази 2 і зовнішні агенти (GPTBot/ClaudeBot/PerplexityBot).",
+  "type": "object",
+  "required": ["version", "generated_at", "business", "lines", "materials"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "business": {
+      "type": "object",
+      "required": ["name", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "address": { "type": "string" },
+        "city": { "type": "string" }
+      }
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "type", "line", "url", "currency", "availability"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "line": { "type": "string" },
+          "line_name": { "type": "string" },
+          "finish": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "price_eur_m2": { "type": ["number", "null"], "minimum": 0 },
+          "currency": { "type": "string", "enum": ["EUR"] },
+          "availability": { "type": "string", "enum": ["InStock", "PreOrder"] },
+          "url": { "type": "string", "format": "uri" }
+        }
+      }
+    }
+  }
+}

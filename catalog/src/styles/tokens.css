@@ -1,0 +1,23 @@
+/* Дизайн-токени ALTACO (PHASE1_BRIEF §4, DECISIONS Р-09).
+   ЄДИНЕ місце колірних/типографічних рішень — заміна однією правкою
+   після підтвердження Ігорем. Tailwind 4 читає їх через @theme у global.css. */
+
+:root {
+  /* Палітра */
+  --alt-ivory: #f1eee7;        /* фон сторінок */
+  --alt-ink: #131a24;          /* темні блоки, хедер */
+  --alt-ink-soft: #1d2733;     /* підняті темні поверхні */
+  --alt-brass: #b9985a;        /* акцент: ціни, лейбли, активні фільтри */
+  --alt-brass-deep: #9a7d44;   /* hover акценту */
+  --alt-paper: #ffffff;        /* картки */
+  --alt-text: #1c222b;         /* основний текст на світлому */
+  --alt-text-muted: #6b6f76;   /* вторинний текст */
+  --alt-hairline: #d9d4c8;     /* тонкі розділювачі на слоновій кістці */
+
+  /* Типографіка */
+  --alt-font-serif: "Playfair Display Variable", "Playfair Display", Georgia, serif;
+  --alt-font-sans: "Manrope Variable", Manrope, Inter, system-ui, sans-serif;
+
+  /* Розріджені КАПС-лейбли — як у прайсі й презентації */
+  --alt-caps-tracking: 0.18em;
+}

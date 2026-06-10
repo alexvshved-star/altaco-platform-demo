@@ -1,0 +1,31 @@
+{
+  "name": "altaco-catalog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ALTACO Marketplace — Фаза 1: публічний read-only сайт-каталог над контрактом даних.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/validate-data.mjs && astro build && node scripts/check-public-artifacts.mjs",
+    "preview": "astro preview",
+    "validate": "node scripts/validate-data.mjs",
+    "test:negative-data": "node scripts/test-negative-data.mjs",
+    "test:e2e": "playwright test",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
+    "@fontsource-variable/manrope": "^5.2.8",
+    "@fontsource-variable/playfair-display": "^5.2.8",
+    "astro": "^5.1.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@playwright/test": "^1.49.1",
+    "@tailwindcss/vite": "^4.0.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2"
+  }
+}

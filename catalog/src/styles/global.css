@@ -1,0 +1,32 @@
+@import "./tokens.css";
+@import "tailwindcss";
+
+@theme {
+  --color-ivory: var(--alt-ivory);
+  --color-ink: var(--alt-ink);
+  --color-ink-soft: var(--alt-ink-soft);
+  --color-brass: var(--alt-brass);
+  --color-brass-deep: var(--alt-brass-deep);
+  --color-paper: var(--alt-paper);
+  --color-body: var(--alt-text);
+  --color-muted: var(--alt-text-muted);
+  --color-hairline: var(--alt-hairline);
+  --font-serif: var(--alt-font-serif);
+  --font-sans: var(--alt-font-sans);
+}
+
+html {
+  background: var(--alt-ivory);
+  color: var(--alt-text);
+  font-family: var(--alt-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Розріджений КАПС-лейбл — повторюваний фірмовий патерн */
+.caps-label {
+  font-family: var(--alt-font-sans);
+  text-transform: uppercase;
+  letter-spacing: var(--alt-caps-tracking);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
