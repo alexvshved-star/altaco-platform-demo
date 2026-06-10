@@ -1,0 +1,75 @@
+{
+  "$schema_version": "0.1.0-demo",
+  "$comment": "Демо-контракт даних ALTACO. Структура й ціна живуть тут; оперативний статус наявності — overlay із Google Sheets. Публікуються лише позиції з повним записом: фото, назва, тип, ціна, фініш.",
+  "lines": [
+    { "id": "sm-quartz", "name": "SM Quartz", "description": "Engineered surfaces — колекції, фініші, технічні документи" },
+    { "id": "sm-marble", "name": "SM Marble", "description": "Engineered surfaces — колекції, фініші, технічні документи" },
+    { "id": "bagnara-selection", "name": "Bagnara Selection", "description": "Преміальний натуральний камінь для проєктів" },
+    { "id": "bagnara-kitchen", "name": "Bagnara Kitchen Selection", "description": "Матеріали для стільниць, кухонь і ванних" },
+    { "id": "italian-stone", "name": "Italian Stone", "description": "Made in Italy — тег і фільтр, італійська компетенція" },
+    { "id": "holovyne-labradorite", "name": "Головинський лабрадорит", "description": "Український камінь" }
+  ],
+  "materials": [
+    {
+      "id": "azul-macauba",
+      "name": "Azul Macauba",
+      "type": "natural_quartzite",
+      "line": "bagnara-selection",
+      "finish": "polished",
+      "price_eur_m2": 0,
+      "photo": "photos/azul-macauba.webp",
+      "tags": ["premium", "blue"],
+      "published": true,
+      "$comment_price": "0 = ціна-плейсхолдер для демо; реальні ціни — після заморозки контракту даних"
+    },
+    {
+      "id": "arabescatto-classico",
+      "name": "Arabescatto Classico",
+      "type": "natural_marble",
+      "line": "italian-stone",
+      "finish": "polished",
+      "price_eur_m2": 0,
+      "photo": "photos/arabescatto-classico.webp",
+      "tags": ["made-in-italy", "marble"],
+      "published": true
+    },
+    {
+      "id": "black-tempest",
+      "name": "Black Tempest",
+      "type": "natural_granite",
+      "line": "bagnara-kitchen",
+      "finish": "leathered",
+      "price_eur_m2": 0,
+      "photo": "photos/black-tempest.webp",
+      "tags": ["kitchen", "dark"],
+      "published": true
+    },
+    {
+      "id": "brown-silk",
+      "name": "Brown Silk",
+      "type": "natural_quartzite",
+      "line": "bagnara-kitchen",
+      "finish": "polished",
+      "price_eur_m2": 0,
+      "photo": "photos/brown-silk.webp",
+      "tags": ["kitchen", "warm"],
+      "published": true
+    },
+    {
+      "id": "mystic-grey",
+      "name": "Mystic Grey",
+      "type": "natural_granite",
+      "line": "holovyne-labradorite",
+      "finish": "polished",
+      "price_eur_m2": 0,
+      "photo": "photos/mystic-grey.webp",
+      "tags": ["ukraine", "grey"],
+      "published": false,
+      "$comment": "published: false — запис неповний, у каталог не потрапляє"
+    }
+  ],
+  "availability_overlay": {
+    "source": "google_sheets",
+    "$comment": "Оперативний статус наявності (запит/резерв) підтягується окремо й не дублюється в ядрі"
+  }
+}
