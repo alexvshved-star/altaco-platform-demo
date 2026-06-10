@@ -5,7 +5,8 @@ import { BUSINESS } from "../config";
 import { getPublishedMaterials, getLines } from "../lib/catalog";
 
 export const GET: APIRoute = ({ site }) => {
-  const base = site!.href.replace(/\/$/, "");
+  // Корінь сайту з урахуванням base розгортання (project-site GitHub Pages).
+  const base = new URL(import.meta.env.BASE_URL, site!).href.replace(/\/$/, "");
   const count = getPublishedMaterials().length;
   const lines = getLines().map((l) => `- ${l.name}${l.description ? `: ${l.description}` : ""}`).join("\n");
   const body = `# ${BUSINESS.name}

@@ -1,0 +1,65 @@
+name: Deploy catalog to GitHub Pages
+
+# Деплой Фази 1 (catalog/) на GitHub Pages. Без зовнішніх токенів — лише GITHUB_TOKEN.
+# Project-site → база /altaco-platform-demo, домен alexvshved-star.github.io.
+on:
+  push:
+    branches:
+      - main
+      - claude/move-altaco-platform-demo-xlrcml
+    paths:
+      - "catalog/**"
+      - ".github/workflows/deploy-catalog.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Один деплой за раз; нові пуші не скасовують уже запущений реліз.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: catalog
+    env:
+      SITE_URL: https://alexvshved-star.github.io
+      BASE_PATH: /altaco-platform-demo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: catalog/package-lock.json
+
+      - run: npm ci
+
+      # validate (схема+integrity) → astro build → контроль публічних артефактів.
+      - run: npm run build
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: catalog/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

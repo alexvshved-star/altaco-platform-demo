@@ -5,6 +5,7 @@
 import { BUSINESS } from "../config";
 import { priceForSchema } from "./format";
 import { typeLabel } from "./catalog";
+import { withBase } from "./base";
 import type { Material } from "./types";
 
 const AVAIL_URL: Record<Material["availability"], string> = {
@@ -57,8 +58,8 @@ export function breadcrumbJsonLd(m: Material, siteUrl: string): Record<string, u
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { position: 1, ...item("Головна", "/") },
-      { position: 2, ...item("Каталог", "/") },
+      { position: 1, ...item("Головна", withBase("/")) },
+      { position: 2, ...item("Каталог", withBase("/")) },
       { position: 3, ...item(m.name, m.url) },
     ].map((el, i) => ({ ...el, position: i + 1 })),
   };
@@ -70,7 +71,7 @@ export function localBusinessJsonLd(siteUrl: string): Record<string, unknown> {
     "@type": "LocalBusiness",
     name: BUSINESS.name,
     slogan: BUSINESS.tagline,
-    url: siteUrl,
+    url: new URL(withBase("/"), siteUrl).href,
     telephone: BUSINESS.phone,
     email: BUSINESS.email,
     address: {

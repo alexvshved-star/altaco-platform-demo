@@ -6,6 +6,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { SHOW_DRAFTS } from "../config";
+import { withBase } from "./base";
 import type {
   Availability,
   Line,
@@ -53,7 +54,7 @@ function availabilityOf(_m: RawMaterial): { value: Availability; known: boolean 
 function findPhoto(id: string, base: "slab" | "detail-1"): string | null {
   for (const ext of ["webp", "jpg"]) {
     const rel = `${id}/${base}.${ext}`;
-    if (existsSync(fileURLToPath(new URL(rel, PHOTOS_DIR)))) return `/photos/${rel}`;
+    if (existsSync(fileURLToPath(new URL(rel, PHOTOS_DIR)))) return withBase(`/photos/${rel}`);
   }
   return null;
 }
@@ -91,7 +92,7 @@ function normalize(m: RawMaterial): Material {
     origin: m.origin,
     color: m.color,
     slabSize: m.slab_size_mm,
-    url: `/katalog/${m.id}`,
+    url: withBase(`/katalog/${m.id}`),
   };
 }
 

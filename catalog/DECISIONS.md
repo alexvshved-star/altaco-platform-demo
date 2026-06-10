@@ -30,6 +30,10 @@
 - **Р-13 · Playwright 1.56.0 (пін).** CDN браузерів Playwright заблокований мережевою політикою середовища (403), доступні лише передвстановлені браузери ревізії 1194 → закріплено @playwright/test@1.56.0, що їй відповідає. · Відкат: зняти пін у середовищі з відкритим CDN.
 - **Р-14 · Schema-типи вручну.** json-schema-to-typescript із ТЗ §3 не застосовано: схема контракту — артефакт цієї ж сесії (написана під заморожені дані), генерація типів з неї — циркулярна. Типи в `types.ts` синхронізовані зі схемою вручну. · Відкат: додати кодоген-крок у build.
 
+- **Р-15 · Деплой на GitHub Pages.** Обрано GitHub Pages (рішення людини). Workflow `.github/workflows/deploy-catalog.yml` бідить `catalog/` і публікує через вбудований GITHUB_TOKEN, без зовнішніх секретів. Project-site → `BASE_PATH=/altaco-platform-demo`, `SITE_URL=https://alexvshved-star.github.io`; усі внутрішні посилання/ассети проходять через `src/lib/base.ts#withBase`, тож canonical/sitemap/JSON-LD/фіди абсолютні й коректні. Локально `base="/"` — тести й preview без змін. · Відкат: змінити `base`/`site` env у workflow або підключити кастомний домен (CNAME) → `BASE_PATH=/`.
+- **Р-16 · Тригер з робочої гілки.** Деплой тимчасово тригериться і з `claude/move-altaco-platform-demo-xlrcml` (не лише `main`), щоб показати живий сайт до мерджу. Після мерджу в `main` рядок гілки з тригера прибрати. · Ризик: якщо середовище `github-pages` має branch-protection на default-гілку — деплой з фіче-гілки заблокується; тоді мерджимо в main (питання до людини).
+- **Р-17 · robots.txt / llms.txt на project-site.** На `*.github.io/altaco-platform-demo/` файли `/robots.txt` і `/llms.txt` лежать у підшляху, а краулери шукають їх у корені домену (`*.github.io/robots.txt`), який нам не належить. Для демо прийнятно; для продакшну — кастомний домен, тоді корінь наш. Зафіксовано як «fix later».
+
 ## Warnings сторонніх інструментів
 
 - npm audit · «astro <=6.1.9: XSS у define:vars; server islands replay» (moderate) · блокер: **НІ** — статичний експорт, `define:vars` не використовується, server islands відсутні. Закрити апгрейдом на Astro 6 окремою сесією.

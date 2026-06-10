@@ -3,6 +3,7 @@
 // availability_overlay). Той самий фід, який у Фазі 2 їсть консультант і зовнішні агенти.
 
 import { getLines, getPublishedMaterials, getLineName } from "./catalog";
+import { withBase } from "./base";
 import { BUSINESS } from "../config";
 
 export interface PublicFeed {
@@ -26,6 +27,8 @@ export interface PublicFeed {
 }
 
 export function buildPublicFeed(siteUrl: string): PublicFeed {
+  // Корінь сайту з урахуванням base (project-site GitHub Pages).
+  const root = new URL(withBase("/"), siteUrl).href;
   const materials = getPublishedMaterials().map((m) => ({
     id: m.id,
     name: m.name,
@@ -45,7 +48,7 @@ export function buildPublicFeed(siteUrl: string): PublicFeed {
     generated_at: new Date().toISOString(),
     business: {
       name: BUSINESS.name,
-      url: siteUrl,
+      url: root,
       address: BUSINESS.street,
       city: BUSINESS.city,
     },

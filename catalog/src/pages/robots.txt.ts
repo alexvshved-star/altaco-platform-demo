@@ -3,7 +3,7 @@
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = ({ site }) => {
-  const base = site!.href.replace(/\/$/, "");
+  const base = new URL(import.meta.env.BASE_URL, site!).href.replace(/\/$/, "");
   const body = `User-agent: *
 Allow: /
 

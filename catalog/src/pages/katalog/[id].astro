@@ -10,6 +10,7 @@ import { formatPriceM2 } from "../../lib/format";
 import { productJsonLd, breadcrumbJsonLd } from "../../lib/jsonld";
 import { t } from "../../i18n/uk";
 import { BUSINESS } from "../../config";
+import { withBase } from "../../lib/base";
 
 export function getStaticPaths() {
   return getMaterials().map((m) => ({ params: { id: m.id }, props: { material: m } }));
@@ -66,7 +67,7 @@ const ogImage = m.photos.slab ?? undefined;
 
     <div class="px-4 sm:px-8 py-8">
       <nav aria-label="Хлібні крихти" class="text-sm text-muted">
-        <a href="/" class="hover:text-brass transition-colors">{t.card.breadcrumbCatalog}</a>
+        <a href={withBase("/")} class="hover:text-brass transition-colors">{t.card.breadcrumbCatalog}</a>
         <span class="mx-1.5">/</span>
         <span aria-current="page">{m.name}</span>
       </nav>

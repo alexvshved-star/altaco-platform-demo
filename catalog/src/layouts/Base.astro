@@ -4,6 +4,7 @@ import "@fontsource-variable/manrope";
 import "../styles/global.css";
 import { t } from "../i18n/uk";
 import { BUSINESS } from "../config";
+import { withBase } from "../lib/base";
 
 interface Props {
   title: string;
@@ -24,9 +25,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
     <link rel="canonical" href={canonical.href} />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" href={withBase("/sitemap-index.xml")} />
     {/* hreflang-структура: UA зараз, EN/RU додаються тут же (PHASE1_BRIEF §5) */}
     <link rel="alternate" hreflang="uk" href={canonical.href} />
     <link rel="alternate" hreflang="x-default" href={canonical.href} />
@@ -43,9 +44,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <body class="min-h-screen bg-ivory text-body flex flex-col">
     <header class="bg-ink text-ivory">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 flex items-center justify-between h-16">
-        <a href="/" class="caps-label text-ivory text-sm tracking-[0.3em]">{t.site.name}</a>
+        <a href={withBase("/")} class="caps-label text-ivory text-sm tracking-[0.3em]">{t.site.name}</a>
         <nav aria-label="Основна навігація">
-          <a href="/" class="caps-label text-ivory/80 hover:text-brass transition-colors">{t.nav.catalog}</a>
+          <a href={withBase("/")} class="caps-label text-ivory/80 hover:text-brass transition-colors">{t.nav.catalog}</a>
         </nav>
       </div>
     </header>
