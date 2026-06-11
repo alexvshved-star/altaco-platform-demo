@@ -198,6 +198,9 @@ const FINISH_LABELS: Record<string, string> = {
   leathered: "Шкіряний (leathered)",
   brushed: "Брашований",
   matte: "Матовий",
+  satinato: "Сатинований (satinato)",
+  levigato: "Лощений (levigato)",
+  pec: "Структурований (P.E.C.)",
 };
 export function finishLabel(f: string): string {
   return FINISH_LABELS[f] ?? f;

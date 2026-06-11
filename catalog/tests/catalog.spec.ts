@@ -26,8 +26,9 @@ const unpublished = contract.materials.filter((m) => m.published !== true);
 // Єдине джерело очікуваного формату ціни — дзеркало src/lib/format.ts.
 const PRICE_ON_REQUEST = "Ціна за запитом";
 function expectedGridPrice(m: RawMaterial): string {
+  // Одинична ціна (без slab_groups) → звичайний формат, як у картці й макеті.
   if (!m.price_eur_m2 || m.price_eur_m2 <= 0) return PRICE_ON_REQUEST;
-  return `від €${new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 0 }).format(m.price_eur_m2)} / м²`;
+  return `€${new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 0 }).format(m.price_eur_m2)} / м²`;
 }
 function expectedCardPrice(m: RawMaterial): string {
   if (!m.price_eur_m2 || m.price_eur_m2 <= 0) return PRICE_ON_REQUEST;

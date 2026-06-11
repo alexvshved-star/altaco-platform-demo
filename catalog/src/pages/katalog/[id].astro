@@ -44,7 +44,7 @@ const specs: Array<[string, string]> = [
   ...(m.thicknesses_mm.length
     ? [[t.card.specThickness, m.thicknesses_mm.map((v) => `${v} мм`).join(", ")] as [string, string]]
     : []),
-  ...(m.slabSize ? [[t.card.specSlabSize, `${m.slabSize.w} × ${m.slabSize.h} мм`] as [string, string]] : []),
+  ...(m.slabSize ? [[t.card.specSlabSize, `${m.slabSize.h} × ${m.slabSize.w} мм`] as [string, string]] : []),
 ];
 
 const mailSubject = encodeURIComponent(`КП: ${m.name} (${m.id})`);

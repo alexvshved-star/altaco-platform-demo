@@ -1,8 +1,8 @@
 ---
 // Картка сітки каталогу (макет стор. 8): фото-текстура, бейдж, serif-назва,
-// КАПС-підпис «тип · лінія», золота ціна «від €min».
+// КАПС-підпис «тип · лінія», золота ціна «€X / м²» (одинична ціна за макетом).
 import { typeLabel } from "../lib/catalog";
-import { formatPriceFrom } from "../lib/format";
+import { formatPriceM2 } from "../lib/format";
 import { t } from "../i18n/uk";
 import type { Material } from "../lib/types";
 import MaterialImage from "./MaterialImage.astro";
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const { material: m } = Astro.props;
-const price = formatPriceFrom(m.priceFromEurM2);
+const price = formatPriceM2(m.priceFromEurM2);
 ---
 
 <article
