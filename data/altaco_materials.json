@@ -14,7 +14,7 @@
       "id": "azul-macauba",
       "name": "Azul Macauba",
       "type": "natural_quartzite",
-      "line": "bagnara-selection",
+      "line": "italian-stone",
       "finish": "polished",
       "price_eur_m2": 0,
       "photo": "photos/azul-macauba.webp",
@@ -66,6 +66,56 @@
       "tags": ["ukraine", "grey"],
       "published": false,
       "$comment": "published: false — запис неповний, у каталог не потрапляє"
+    },
+    {
+      "id": "moon-rock",
+      "name": "Moon Rock",
+      "type": "natural_quartzite",
+      "line": "bagnara-kitchen",
+      "finish": "polished",
+      "price_eur_m2": 0,
+      "tags": ["kitchen", "grey"],
+      "published": true
+    },
+    {
+      "id": "atlantic-stone",
+      "name": "Atlantic Stone",
+      "type": "natural_quartzite",
+      "line": "bagnara-kitchen",
+      "finish": "honed",
+      "price_eur_m2": 0,
+      "tags": ["kitchen", "grey"],
+      "published": true
+    },
+    {
+      "id": "statuarietto",
+      "name": "Statuarietto",
+      "type": "natural_marble",
+      "line": "italian-stone",
+      "finish": "polished",
+      "price_eur_m2": 0,
+      "tags": ["made-in-italy", "white", "marble"],
+      "published": true
+    },
+    {
+      "id": "calacatta-gold",
+      "name": "Calacatta Gold",
+      "type": "natural_marble",
+      "line": "italian-stone",
+      "finish": "polished",
+      "price_eur_m2": 0,
+      "tags": ["made-in-italy", "white", "gold"],
+      "published": true
+    },
+    {
+      "id": "azul-aran",
+      "name": "Azul Aran",
+      "type": "natural_granite",
+      "line": "bagnara-kitchen",
+      "finish": "polished",
+      "price_eur_m2": 0,
+      "tags": ["kitchen", "grey", "granite"],
+      "published": true
     }
   ],
   "availability_overlay": {
