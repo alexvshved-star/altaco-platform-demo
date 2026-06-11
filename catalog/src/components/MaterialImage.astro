@@ -1,22 +1,20 @@
 ---
-// Зображення матеріалу: реальне фото за конвенцією або генерований патерн (Р-07).
-// Плейсхолдер — інлайн SVG у DOM (не data-URI в img), щоб лишатися легким і читабельним.
+// Одне зображення матеріалу за індексом. Реальне фото (PHOTO_GUIDE.md) або,
+// якщо файлів немає, генерований патерн-плейсхолдер у DOM (Р-07).
 import { placeholderSvg } from "../lib/placeholder";
 import type { Material } from "../lib/types";
 
 interface Props {
   material: Material;
-  /** detail — текстура для сітки; slab — повний сляб для картки. */
-  variant: "detail" | "slab";
+  /** Індекс фото (0 = перше; сітка завжди 0). */
+  index?: number;
   class?: string;
   loading?: "lazy" | "eager";
 }
 
-const { material: m, variant, class: cls = "", loading = "lazy" } = Astro.props;
-const src = variant === "detail" ? m.photos.detail : m.photos.slab;
-const alt = [m.name, m.finish, m.slabSize ? `сляб ${m.slabSize.w}×${m.slabSize.h} мм` : null]
-  .filter(Boolean)
-  .join(", ");
+const { material: m, index = 0, class: cls = "", loading = "lazy" } = Astro.props;
+const src = m.photos[index] ?? null;
+const alt = [m.name, m.finish].filter(Boolean).join(", ");
 ---
 
 {src ? (

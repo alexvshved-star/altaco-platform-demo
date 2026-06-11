@@ -30,8 +30,8 @@ const price = formatPriceFrom(m.priceFromEurM2);
     <div class="relative aspect-[4/3] overflow-hidden">
       <MaterialImage
         material={m}
-        variant="detail"
-        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] [&>svg]:h-full [&>svg]:w-full"
+        index={0}
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:h-full [&>svg]:w-full"
       />
       <AvailabilityBadge material={m} class="absolute left-3 top-3" />
       {!m.published && (

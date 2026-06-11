@@ -50,19 +50,48 @@ const specs: Array<[string, string]> = [
 const mailSubject = encodeURIComponent(`КП: ${m.name} (${m.id})`);
 const quoteHref = `mailto:${BUSINESS.email}?subject=${mailSubject}`;
 const requestHref = BUSINESS.telegram;
-const ogImage = m.photos.slab ?? undefined;
+const ogImage = m.photos[0] ?? undefined;
 ---
 
 <Base title={title} description={description} jsonLd={jsonLd} ogImage={ogImage}>
   <div class="mx-auto max-w-7xl lg:grid lg:grid-cols-[55%_45%] lg:items-start">
-    <div class="relative lg:sticky lg:top-0">
-      <MaterialImage
-        material={m}
-        variant="slab"
-        loading="eager"
-        class="block aspect-[4/5] w-full [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:h-full [&>svg]:w-full"
-      />
-      <AvailabilityBadge material={m} class="absolute left-4 top-4" />
+    <div class="lg:sticky lg:top-0">
+      {/* Галерея: hero = фото 1; мініатюри перемикають hero (PHASE1_BRIEF §1: «у картці всі три»). */}
+      <div class="relative" data-gallery>
+        <div class="aspect-[4/5] w-full overflow-hidden bg-paper">
+          {m.photos.length > 0 ? (
+            m.photos.map((src, i) => (
+              <img
+                src={src}
+                alt={[m.name, m.finish].filter(Boolean).join(", ")}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+                data-hero={i}
+                class:list={["h-full w-full object-cover", { hidden: i !== 0 }]}
+              />
+            ))
+          ) : (
+            <MaterialImage material={m} index={0} class="block h-full w-full [&>svg]:h-full [&>svg]:w-full" />
+          )}
+        </div>
+        <AvailabilityBadge material={m} class="absolute left-4 top-4" />
+      </div>
+
+      {m.photos.length > 1 && (
+        <div class="mt-2 grid grid-cols-4 gap-2 px-1" role="group" aria-label="Фото матеріалу">
+          {m.photos.map((src, i) => (
+            <button
+              type="button"
+              data-thumb={i}
+              aria-label={`Показати фото ${i + 1}`}
+              aria-pressed={i === 0 ? "true" : "false"}
+              class="aspect-square overflow-hidden border border-hairline cursor-pointer aria-pressed:border-brass aria-pressed:ring-1 aria-pressed:ring-brass"
+            >
+              <img src={src} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
 
     <div class="px-4 sm:px-8 py-8">
@@ -113,3 +142,20 @@ const ogImage = m.photos.slab ?? undefined;
     </div>
   </div>
 </Base>
+
+<script>
+  // Перемикання hero-фото мініатюрами. Без JS усі фото лишаються в DOM (SSG),
+  // hero = фото 1 — це і є дефолт для краулерів/агентів.
+  const gallery = document.querySelector<HTMLElement>("[data-gallery]");
+  if (gallery) {
+    const heroes = [...gallery.querySelectorAll<HTMLElement>("[data-hero]")];
+    const thumbs = [...document.querySelectorAll<HTMLButtonElement>("[data-thumb]")];
+    for (const thumb of thumbs) {
+      thumb.addEventListener("click", () => {
+        const idx = Number(thumb.dataset.thumb);
+        heroes.forEach((h, i) => h.classList.toggle("hidden", i !== idx));
+        thumbs.forEach((t) => t.setAttribute("aria-pressed", t === thumb ? "true" : "false"));
+      });
+    }
+  }
+</script>

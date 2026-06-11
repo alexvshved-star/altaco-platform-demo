@@ -4,14 +4,6 @@
 
 export type Availability = "InStock" | "PreOrder";
 
-/** Розвʼязані build-time шляхи фото за конвенцією PHOTO_GUIDE.md; null → плейсхолдер. */
-export interface ResolvedPhotos {
-  /** Повний сляб — hero картки матеріалу. */
-  slab: string | null;
-  /** Текстура зблизька — сітка каталогу (фолбек: slab). */
-  detail: string | null;
-}
-
 export interface Line {
   id: string;
   name: string;
@@ -75,7 +67,9 @@ export interface Material {
   /** Поле наявності в демо-контракті відсутнє → невідома (бейдж «Наявність уточнюється»). */
   availabilityKnown: boolean;
   published: boolean;
-  photos: ResolvedPhotos;
+  /** Впорядковані шляхи фото (1.jpg, 2.jpg…) за PHOTO_GUIDE.md; [] → плейсхолдер.
+   *  Сітка показує photos[0]; картка — усі (PHASE1_BRIEF §1). */
+  photos: string[];
   origin?: string;
   color?: string;
   slabSize?: { w: number; h: number };

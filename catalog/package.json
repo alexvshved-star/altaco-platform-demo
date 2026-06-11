@@ -12,7 +12,8 @@
     "test:negative-data": "node scripts/test-negative-data.mjs",
     "test:marketplace": "node scripts/test-marketplace.mjs",
     "test:e2e": "playwright test",
-    "check": "astro check"
+    "check": "astro check",
+    "photos": "node scripts/optimize-photos.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",
@@ -27,6 +28,7 @@
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "lighthouse": "^13.4.0",
+    "sharp": "^0.35.1",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2"
   }

@@ -13,7 +13,6 @@ import type {
   Material,
   RawContract,
   RawMaterial,
-  ResolvedPhotos,
   SlabGroup,
 } from "./types";
 
@@ -50,19 +49,26 @@ function availabilityOf(_m: RawMaterial): { value: Availability; known: boolean 
   return { value: "PreOrder", known: false };
 }
 
-/** Пошук фото за конвенцією PHOTO_GUIDE.md: photos/{id}/{name}.{webp|jpg}. Поле photo в JSON ігнорується (Р-07). */
-function findPhoto(id: string, base: "slab" | "detail-1"): string | null {
-  for (const ext of ["webp", "jpg"]) {
-    const rel = `${id}/${base}.${ext}`;
+// Фото нумеруються 1..N за PHOTO_GUIDE.md. Файлова система — source of truth;
+// поле photo в JSON ігнорується (Р-07). Сітка бере photos[0], картка — усі.
+const MAX_PHOTOS = 8;
+
+function findPhoto(id: string, n: number): string | null {
+  for (const ext of ["webp", "jpg", "jpeg"]) {
+    const rel = `${id}/${n}.${ext}`;
     if (existsSync(fileURLToPath(new URL(rel, PHOTOS_DIR)))) return withBase(`/photos/${rel}`);
   }
   return null;
 }
 
-function resolvePhotos(id: string): ResolvedPhotos {
-  const slab = findPhoto(id, "slab");
-  const detail = findPhoto(id, "detail-1") ?? slab;
-  return { slab, detail };
+function resolvePhotos(id: string): string[] {
+  const found: string[] = [];
+  for (let n = 1; n <= MAX_PHOTOS; n++) {
+    const p = findPhoto(id, n);
+    if (p) found.push(p);
+    else if (n > 1) break; // нумерація суцільна: зупиняємось на першій дірці
+  }
+  return found;
 }
 
 function normalize(m: RawMaterial): Material {
