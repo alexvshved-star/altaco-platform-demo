@@ -145,8 +145,11 @@ for (const id of publishedIds) {
     }
   }
 
-  // Availability: у демо-контракті поля наявності немає → консервативний PreOrder (Р-06).
-  const expectedAvail = "https://schema.org/PreOrder";
+  // Availability з stock_location: on_order → PreOrder, kyiv/dnipro → InStock.
+  const expectedAvail =
+    (raw.stock_location ?? "on_order") === "on_order"
+      ? "https://schema.org/PreOrder"
+      : "https://schema.org/InStock";
   if (product.offers.availability !== expectedAvail) {
     fail(`/katalog/${id}: availability=${product.offers.availability} ≠ ${expectedAvail} (з даних)`); continue;
   }

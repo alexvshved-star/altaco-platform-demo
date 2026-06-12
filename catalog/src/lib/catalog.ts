@@ -14,6 +14,7 @@ import type {
   RawContract,
   RawMaterial,
   SlabGroup,
+  StockLocation,
 } from "./types";
 
 // DATA_FILE — лише для тестових білдів (test-marketplace) з тимчасовою КОПІЄЮ контракту;
@@ -44,9 +45,10 @@ function priceFrom(m: RawMaterial): number | null {
   return minPositive(m.price_eur_m2, ...groupPrices);
 }
 
-/** Наявність: поля в демо-контракті немає → PreOrder як консервативний enum (DECISIONS Р-06). */
-function availabilityOf(_m: RawMaterial): { value: Availability; known: boolean } {
-  return { value: "PreOrder", known: false };
+/** Наявність із поля stock_location (зашите в даних). on_order → PreOrder, інакше InStock. */
+function stockOf(m: RawMaterial): { location: StockLocation; availability: Availability } {
+  const location = m.stock_location ?? "on_order";
+  return { location, availability: location === "on_order" ? "PreOrder" : "InStock" };
 }
 
 // Фото нумеруються 1..N за PHOTO_GUIDE.md. Файлова система — source of truth;
@@ -73,7 +75,7 @@ function resolvePhotos(id: string): string[] {
 
 function normalize(m: RawMaterial): Material {
   const line = lineById.get(m.line);
-  const availability = availabilityOf(m);
+  const stock = stockOf(m);
   const finishes = m.finishes?.length
     ? m.finishes
     : m.finish
@@ -91,8 +93,8 @@ function normalize(m: RawMaterial): Material {
     priceFromEurM2: priceFrom(m),
     tags: m.tags ?? [],
     applications: m.applications ?? [],
-    availability: availability.value,
-    availabilityKnown: availability.known,
+    availability: stock.availability,
+    stockLocation: stock.location,
     published: m.published === true,
     photos: resolvePhotos(m.id),
     origin: m.origin,

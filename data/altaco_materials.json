@@ -1,6 +1,6 @@
 {
   "$schema_version": "0.1.0-demo",
-  "$comment": "Демо-контракт даних ALTACO. Структура й ціна живуть тут; оперативний статус наявності — overlay із Google Sheets. Публікуються лише позиції з повним записом: фото, назва, тип, ціна, фініш. Обробки, розміри й роздрібні ціни (€/м²) внесено з прайс-таблиці складу.",
+  "$comment": "Демо-контракт даних ALTACO. Структура й ціна живуть тут; оперативний статус наявності — поле stock_location (kyiv/dnipro/on_order). Публікуються лише позиції з повним записом: фото, назва, тип, ціна, фініш. Обробки, розміри й роздрібні ціни (€/м²) внесено з прайс-таблиці складу.",
   "lines": [
     { "id": "sm-quartz", "name": "SM Quartz", "description": "Engineered surfaces — колекції, фініші, технічні документи" },
     { "id": "sm-marble", "name": "SM Marble", "description": "Engineered surfaces — колекції, фініші, технічні документи" },
@@ -20,11 +20,12 @@
       "slab_size_mm": { "w": 1930, "h": 3380 },
       "price_eur_m2": 1100,
       "tags": ["premium", "blue"],
+      "stock_location": "on_order",
       "published": true
     },
     {
-      "id": "arabescatto-classico",
-      "name": "Arabescatto Classico",
+      "id": "arabescato-classico",
+      "name": "Arabescato Classico",
       "type": "natural_marble",
       "line": "italian-stone",
       "finish": "polished",
@@ -32,6 +33,7 @@
       "slab_size_mm": { "w": 1660, "h": 2550 },
       "price_eur_m2": 380,
       "tags": ["made-in-italy", "marble", "white"],
+      "stock_location": "on_order",
       "published": true
     },
     {
@@ -44,6 +46,7 @@
       "slab_size_mm": { "w": 1950, "h": 3300 },
       "price_eur_m2": 520,
       "tags": ["kitchen", "dark"],
+      "stock_location": "kyiv",
       "published": true
     },
     {
@@ -56,6 +59,7 @@
       "slab_size_mm": { "w": 1940, "h": 3120 },
       "price_eur_m2": 320,
       "tags": ["kitchen", "grey"],
+      "stock_location": "dnipro",
       "published": true
     },
     {
@@ -80,6 +84,7 @@
       "slab_size_mm": { "w": 1880, "h": 3260 },
       "price_eur_m2": 320,
       "tags": ["kitchen", "grey"],
+      "stock_location": "dnipro",
       "published": true
     },
     {
@@ -92,6 +97,7 @@
       "slab_size_mm": { "w": 1910, "h": 2610 },
       "price_eur_m2": 580,
       "tags": ["kitchen", "grey"],
+      "stock_location": "dnipro",
       "published": true
     },
     {
@@ -104,6 +110,7 @@
       "slab_size_mm": { "w": 1900, "h": 3120 },
       "price_eur_m2": 440,
       "tags": ["made-in-italy", "white", "marble"],
+      "stock_location": "kyiv",
       "published": true
     },
     {
@@ -116,6 +123,7 @@
       "slab_size_mm": { "w": 1940, "h": 2650 },
       "price_eur_m2": 580,
       "tags": ["made-in-italy", "white", "gold"],
+      "stock_location": "kyiv",
       "published": true
     },
     {
@@ -128,6 +136,7 @@
       "slab_size_mm": { "w": 1930, "h": 2780 },
       "price_eur_m2": 300,
       "tags": ["kitchen", "grey", "granite"],
+      "stock_location": "kyiv",
       "published": true
     }
   ],

@@ -4,6 +4,9 @@
 
 export type Availability = "InStock" | "PreOrder";
 
+/** Локація наявності — джерело бейджа на картці й у каталозі. */
+export type StockLocation = "kyiv" | "dnipro" | "on_order";
+
 export interface Line {
   id: string;
   name: string;
@@ -40,6 +43,7 @@ export interface RawMaterial {
   slab_size_mm?: { w: number; h: number };
   applications?: string[];
   slab_groups?: SlabGroup[];
+  stock_location?: StockLocation;
 }
 
 export interface RawContract {
@@ -64,8 +68,8 @@ export interface Material {
   tags: string[];
   applications: string[];
   availability: Availability;
-  /** Поле наявності в демо-контракті відсутнє → невідома (бейдж «Наявність уточнюється»). */
-  availabilityKnown: boolean;
+  /** Локація наявності для бейджа: kyiv / dnipro / on_order. */
+  stockLocation: StockLocation;
   published: boolean;
   /** Впорядковані шляхи фото (1.jpg, 2.jpg…) за PHOTO_GUIDE.md; [] → плейсхолдер.
    *  Сітка показує photos[0]; картка — усі (PHASE1_BRIEF §1). */

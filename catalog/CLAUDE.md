@@ -6,7 +6,7 @@
 
 1. `data/altaco_materials.json` — заморожений контракт. Код адаптується під дані, ніколи навпаки. Жодних правок JSON і схеми без явного дозволу людини, включно зі статусами і «очевидними помилками» — знайшов проблему в даних: СТОП, питання людині.
 2. Фото: файлова система — source of truth, конвенція `photos/{id}/slab.jpg` + `detail-1.jpg`. Шляхи в JSON руками не прописуються.
-3. Публічні ціни — тільки retail з контракту. `qty_slabs`, `notes_internal`, `todo_manual` не потрапляють у жоден публічний build-артефакт (HTML, JS, JSON-LD, sitemap, фіди, sourcemaps) — лише узагальнений бейдж наявності. Позиції з `qty_slabs: null` — «наявність уточнюється». SHOW_DRAFTS у production — завжди false.
+3. Публічні ціни — тільки retail з контракту. `qty_slabs`, `notes_internal`, `todo_manual` не потрапляють у жоден публічний build-артефакт (HTML, JS, JSON-LD, sitemap, фіди, sourcemaps) — лише узагальнений бейдж наявності з поля `stock_location` (kyiv/dnipro/on_order). SHOW_DRAFTS у production — завжди false.
 4. `hidden`-позиції не існують для фронтенду: ні сторінок, ні sitemap, ні /catalog.json.
 5. Валідація проти схеми + обидві integrity-перевірки — обов'язкова частина build. Build падає на невалідних даних.
 6. Жодних вигаданих матеріалів, цін, описів. Порожнє поле → секція не рендериться.

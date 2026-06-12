@@ -29,9 +29,9 @@ export const t = {
     draftBadge: "Чернетка",
   },
   card: {
-    inStock: "В наявності · Київ",
+    inStockKyiv: "В наявності · Київ",
+    inStockDnipro: "В наявності · Дніпро",
     preOrder: "Під замовлення",
-    availabilityUnknown: "Наявність уточнюється",
     requestQuote: "Запросити КП",
     addToRequest: "Додати в запит",
     breadcrumbHome: "Головна",

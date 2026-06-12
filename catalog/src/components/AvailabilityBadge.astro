@@ -9,11 +9,14 @@ interface Props {
 }
 
 const { material: m, class: cls = "" } = Astro.props;
-const label = !m.availabilityKnown
-  ? t.card.availabilityUnknown
-  : m.availability === "InStock"
-    ? t.card.inStock
-    : t.card.preOrder;
+const label =
+  m.stockLocation === "kyiv"
+    ? t.card.inStockKyiv
+    : m.stockLocation === "dnipro"
+      ? t.card.inStockDnipro
+      : t.card.preOrder;
+// Наявність — акцентний (темний) бейдж; «Під замовлення» — приглушений.
+const tone = m.stockLocation === "on_order" ? "bg-muted text-ivory" : "bg-ink text-ivory";
 ---
 
-<span class={`caps-label inline-block bg-ink text-ivory px-3 py-1.5 ${cls}`}>{label}</span>
+<span class={`caps-label inline-block ${tone} px-3 py-1.5 ${cls}`}>{label}</span>

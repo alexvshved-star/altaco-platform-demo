@@ -17,10 +17,10 @@ export const BUSINESS = {
   city: "Київ",
   country: "UA",
   postalCode: "02000",
-  phone: "+380 44 000 0000",
+  phone: "+380 97 242 21 21",
   email: "hello@altaco.ua",
   hours: "Mo-Fr 09:00-18:00",
   tagline: "Beyond the Surface",
   // Канал «Додати в запит» / «Запросити КП» поки без бекенду — mailto/Telegram (§1).
-  telegram: "https://t.me/altaco",
+  telegram: "https://t.me/ALTACO_STONE",
 } as const;
