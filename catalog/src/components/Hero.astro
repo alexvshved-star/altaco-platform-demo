@@ -1,0 +1,46 @@
+---
+// Hero над каталогом (тільки головна). Один статичний кадр, без каруселі/анімацій.
+// LCP-елемент: eager + fetchpriority=high; висота фіксована у vh → нуль CLS.
+import { t } from "../i18n/uk";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const img = (f: string) => `${base}/photos/hero/${f}`;
+---
+
+<section
+  class="relative w-full overflow-hidden bg-ink h-[40vh] sm:h-[45vh] lg:h-[55vh] lg:max-h-[640px]"
+  aria-label={t.hero.title}
+>
+  <img
+    src={img("hero-1600.webp")}
+    srcset={`${img("hero-960.webp")} 960w, ${img("hero-1600.webp")} 1600w`}
+    sizes="100vw"
+    width="1600"
+    height="898"
+    alt={t.hero.alt}
+    loading="eager"
+    fetchpriority="high"
+    decoding="async"
+    class="absolute inset-0 h-full w-full object-cover object-[70%_center] lg:object-right"
+  />
+  {/* Легкий лівий градієнт для контрасту тексту (≤ 40%, без суцільного overlay). */}
+  <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent"></div>
+
+  <div class="absolute inset-0">
+    <div class="mx-auto max-w-7xl h-full px-4 sm:px-6 flex items-center">
+      <div class="max-w-xs sm:max-w-sm lg:max-w-md text-ivory">
+        <p class="caps-label text-brass">{t.hero.overline}</p>
+        <p class="font-serif text-4xl sm:text-5xl mt-3">{t.hero.title}</p>
+        <p class="mt-4 text-sm sm:text-base text-ivory/85">{t.hero.subtitle}</p>
+        <a
+          href="#catalog"
+          class="caps-label inline-flex items-center gap-2 mt-6 border border-ivory/40 px-5 py-3 hover:border-brass hover:text-brass transition-colors"
+        >{t.hero.cta}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  html { scroll-behavior: smooth; }
+</style>

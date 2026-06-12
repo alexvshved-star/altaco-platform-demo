@@ -2,6 +2,7 @@
 // Каталог (макет стор. 8): фільтр-бар, лічильник, сортування за ціною, сітка карток.
 // Увесь контент у DOM на етапі SSG; фільтри — прогресивне підсилення без фреймворку.
 import Base from "../layouts/Base.astro";
+import Hero from "../components/Hero.astro";
 import MaterialCard from "../components/MaterialCard.astro";
 import { getMaterials, getFacets } from "../lib/catalog";
 import { localBusinessJsonLd } from "../lib/jsonld";
@@ -16,7 +17,8 @@ const description = t.site.description;
 ---
 
 <Base title={title} description={description} jsonLd={[localBusinessJsonLd(siteUrl)]}>
-  <section class="mx-auto max-w-7xl px-4 sm:px-6">
+  <Hero />
+  <section id="catalog" class="scroll-mt-4 mx-auto max-w-7xl px-4 sm:px-6">
     <div class="border-b border-hairline py-4" data-role="filterbar">
       <span class="caps-label text-muted">{t.catalog.filters}</span>
       {/* Патерн «лейбл над селектом»: 1 кол. (моб) → 2×2 (sm) → 4 в ряд (lg). Селекти w-full, рівна висота. */}
