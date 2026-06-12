@@ -17,28 +17,33 @@ const description = t.site.description;
 
 <Base title={title} description={description} jsonLd={[localBusinessJsonLd(siteUrl)]}>
   <section class="mx-auto max-w-7xl px-4 sm:px-6">
-    <div class="border-b border-hairline py-4 flex flex-wrap items-center gap-x-5 gap-y-3" data-role="filterbar">
+    <div class="border-b border-hairline py-4" data-role="filterbar">
       <span class="caps-label text-muted">{t.catalog.filters}</span>
-      {facets.map((f) => (
-        <label class="flex items-center gap-2 text-sm">
-          <span class="caps-label text-muted">{f.label}</span>
-          <select
-            class="border border-hairline bg-paper px-2 py-1.5 text-sm"
-            data-facet={f.key}
-            aria-label={f.label}
-          >
-            <option value="">—</option>
-            {f.values.map((v) => (
-              <option value={v.value}>{v.label} ({v.count})</option>
-            ))}
-          </select>
-        </label>
-      ))}
-      <button
-        type="button"
-        class="caps-label text-brass-text hover:text-brass-deep transition-colors cursor-pointer"
-        data-role="reset"
-      >{t.catalog.reset}</button>
+      {/* Патерн «лейбл над селектом»: 1 кол. (моб) → 2×2 (sm) → 4 в ряд (lg). Селекти w-full, рівна висота. */}
+      <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4">
+        {facets.map((f) => (
+          <label class="flex flex-col gap-1.5">
+            <span class="caps-label text-muted">{f.label}</span>
+            <select
+              class="w-full border border-hairline bg-paper px-2 py-1.5 text-sm"
+              data-facet={f.key}
+              aria-label={f.label}
+            >
+              <option value="">—</option>
+              {f.values.map((v) => (
+                <option value={v.value}>{v.label} ({v.count})</option>
+              ))}
+            </select>
+          </label>
+        ))}
+      </div>
+      <div class="mt-3 flex justify-end">
+        <button
+          type="button"
+          class="caps-label text-brass-text hover:text-brass-deep transition-colors cursor-pointer"
+          data-role="reset"
+        >{t.catalog.reset}</button>
+      </div>
     </div>
 
     <div class="py-8 flex flex-wrap items-end justify-between gap-4">
@@ -46,8 +51,8 @@ const description = t.site.description;
         <h1 class="font-serif text-4xl">{t.catalog.title}</h1>
         <p class="mt-2 max-w-xl text-muted text-sm">{t.catalog.intro}</p>
       </div>
-      <div class="flex items-center gap-6">
-        <label class="flex items-center gap-2 text-sm">
+      <div class="flex items-end justify-between gap-6 w-full sm:w-auto">
+        <label class="flex flex-col gap-1.5">
           <span class="caps-label text-muted">{t.catalog.sort}</span>
           <select class="border border-hairline bg-paper px-2 py-1.5 text-sm" data-role="sort" aria-label={t.catalog.sort}>
             <option value="">—</option>
