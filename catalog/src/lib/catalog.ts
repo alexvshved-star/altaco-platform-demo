@@ -100,6 +100,7 @@ function normalize(m: RawMaterial): Material {
     origin: m.origin,
     color: m.color,
     slabSize: m.slab_size_mm,
+    description: m.description ?? "",
     url: withBase(`/katalog/${m.id}`),
   };
 }
@@ -177,9 +178,26 @@ export function getFacets(materials: Material[] = getMaterials()): Facet[] {
     facet("type", "Тип каменю", materials, (m) => [m.type], typeLabel),
     facet("line", "Лінія / колекція", materials, (m) => [m.line], getLineName),
     facet("finish", "Фініш", materials, (m) => m.finishes, finishLabel),
-    facet("tag", "Теги", materials, (m) => m.tags),
+    facet("color", "Колір", materials, materialColors, colorLabel),
   ];
   return facets.filter((f): f is Facet => f !== null);
+}
+
+// Колір — проєкція тегів (схему даних не міняємо; теги лишаються в JSON).
+// Лише ці ключі стають значеннями фільтра; службові теги (granite, kitchen…) — ні.
+const COLOR_LABELS: Record<string, string> = {
+  white: "Білий",
+  grey: "Сірий",
+  dark: "Чорний",
+  blue: "Синій",
+  gold: "Золотистий",
+};
+/** Кольорові теги матеріалу (у порядку оголошення в даних). */
+export function materialColors(m: Material): string[] {
+  return m.tags.filter((tag) => tag in COLOR_LABELS);
+}
+export function colorLabel(v: string): string {
+  return COLOR_LABELS[v] ?? v;
 }
 
 // Людиночитні підписи для технічних значень контракту (UA).

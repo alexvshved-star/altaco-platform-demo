@@ -56,12 +56,13 @@ test.describe("Каталог", () => {
         const value = (await opt.getAttribute("value"))!;
         await facet.selectOption(value);
         // очікування з контракту: скільки published мають це значення фасета
+        const COLOR_KEYS = ["white", "grey", "dark", "blue", "gold"];
         const expected = published.filter((m) => {
           const raw =
             key === "type" ? [m.type]
             : key === "line" ? [m.line]
             : key === "finish" ? (m.finish ? [m.finish] : [])
-            : key === "tag" ? (m.tags ?? [])
+            : key === "color" ? (m.tags ?? []).filter((tg) => COLOR_KEYS.includes(tg))
             : [];
           return raw.includes(value);
         }).length;
@@ -99,7 +100,7 @@ test.describe("Картка матеріалу", () => {
       await page.goto(`/katalog/${m.id}`);
       await expect(page.locator("h1")).toHaveText(m.name);
       await expect(page.locator('[data-role="price"]')).toHaveText(expectedCardPrice(m));
-      await expect(page.locator("dl")).toContainText(
+      await expect(page.locator("dl").first()).toContainText(
         contract.lines.find((l) => l.id === m.line)!.name,
       );
     }

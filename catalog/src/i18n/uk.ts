@@ -40,7 +40,7 @@ export const t = {
     inStockDnipro: "В наявності · Дніпро",
     preOrder: "Під замовлення",
     requestQuote: "Запросити КП",
-    addToRequest: "Додати в запит",
+    writeTelegram: "Написати в Telegram",
     breadcrumbHome: "Головна",
     breadcrumbCatalog: "Каталог",
     specs: "Характеристики",
@@ -52,6 +52,10 @@ export const t = {
     specOrigin: "Походження",
     specColor: "Колір",
     specSlabSize: "Розмір сляба",
+    specFormat: "Формат",
+    specArea: "Площа",
+    thicknessOne: "Товщина",
+    slabPriceUnknown: "Точна вартість слаба — за запитом",
     applications: "Застосування",
     priceNote: "Ціни в євро · з ПДВ · розрахунок у грн за курсом на день оплати",
     description: "Опис",
@@ -60,6 +64,9 @@ export const t = {
   footer: {
     rights: "Усі права захищено",
     address: "вул. Будіндустрії, 7 · Київ",
+    legal: "ТОВ «АЛТАКО» · ЄДРПОУ 41328248",
+    site: "altaco.com.ua",
+    siteUrl: "https://altaco.com.ua",
   },
 } as const;
 

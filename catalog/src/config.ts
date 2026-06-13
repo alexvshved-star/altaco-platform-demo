@@ -18,7 +18,7 @@ export const BUSINESS = {
   country: "UA",
   postalCode: "02000",
   phone: "+380 97 242 21 21",
-  email: "hello@altaco.ua",
+  email: "altacostone@gmail.com",
   hours: "Mo-Fr 09:00-18:00",
   tagline: "Beyond the Surface",
   // Канал «Додати в запит» / «Запросити КП» поки без бекенду — mailto/Telegram (§1).

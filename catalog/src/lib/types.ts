@@ -35,6 +35,8 @@ export interface RawMaterial {
   photo?: string;
   tags?: string[];
   published: boolean;
+  /** Описовий текст матеріалу (за замовчуванням порожній). */
+  description?: string;
   // майбутні поля
   origin?: string;
   color?: string;
@@ -77,5 +79,7 @@ export interface Material {
   origin?: string;
   color?: string;
   slabSize?: { w: number; h: number };
+  /** Описовий текст; "" → блок опису не рендериться. */
+  description: string;
   url: string;
 }

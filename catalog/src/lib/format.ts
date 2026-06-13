@@ -20,6 +20,28 @@ export function formatPriceFrom(value: number | null): string {
 
 export const PRICE_ON_REQUEST = "Ціна за запитом";
 
+const num2 = new Intl.NumberFormat("uk-UA", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Ціна за цілий слаб (сторінка матеріалу, build-time).
+ * Площа НЕ округлюється для розрахунку; для показу — 2 знаки.
+ * Ціна за слаб = математичне округлення до 10 €.
+ */
+export function slabPricing(
+  slabSize: { w: number; h: number } | undefined,
+  pricePerM2: number | null,
+): { areaDisplay: string | null; slabPriceDisplay: string | null } {
+  if (!slabSize) return { areaDisplay: null, slabPriceDisplay: null };
+  const area = (slabSize.h * slabSize.w) / 1_000_000; // м², без округлення
+  const areaDisplay = `${num2.format(area)} м²`;
+  if (pricePerM2 == null || pricePerM2 <= 0) return { areaDisplay, slabPriceDisplay: null };
+  const slab = Math.round((area * pricePerM2) / 10) * 10; // округлення до 10 €
+  return { areaDisplay, slabPriceDisplay: `€${eur.format(slab)} / слаб` };
+}
+
 /** Числове значення ціни для JSON-LD (тільки коли реальна ціна є). */
 export function priceForSchema(value: number | null): string | null {
   if (value == null || value <= 0) return null;

@@ -1,7 +1,7 @@
 ---
 // Картка сітки каталогу (макет стор. 8): фото-текстура, бейдж, serif-назва,
 // КАПС-підпис «тип · лінія», золота ціна «€X / м²» (одинична ціна за макетом).
-import { typeLabel } from "../lib/catalog";
+import { typeLabel, materialColors } from "../lib/catalog";
 import { formatPriceM2 } from "../lib/format";
 import { t } from "../i18n/uk";
 import type { Material } from "../lib/types";
@@ -22,7 +22,7 @@ const price = formatPriceM2(m.priceFromEurM2);
   data-type={m.type}
   data-line={m.line}
   data-finish={m.finishes.join(" ")}
-  data-tag={m.tags.join(" ")}
+  data-color={materialColors(m).join(" ")}
   data-price={m.priceFromEurM2 ?? ""}
   data-name={m.name}
 >

@@ -48,6 +48,7 @@
         "tags": { "type": "array", "items": { "type": "string" } },
         "published": { "type": "boolean" },
         "stock_location": { "type": "string", "enum": ["kyiv", "dnipro", "on_order"] },
+        "description": { "type": "string" },
 
         "_comment_future": "Опціональні поля майбутнього багатого контракту — дозволені, не обовʼязкові.",
         "origin": { "type": "string" },

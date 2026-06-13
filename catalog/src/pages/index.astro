@@ -98,7 +98,7 @@ const description = t.site.description;
   function matches(card: HTMLElement): boolean {
     return selects.every((sel) => {
       if (!sel.value) return true;
-      const raw = card.dataset[sel.dataset.facet === "tag" ? "tag" : sel.dataset.facet!] ?? "";
+      const raw = card.dataset[sel.dataset.facet!] ?? "";
       return raw.split(" ").includes(sel.value);
     });
   }
