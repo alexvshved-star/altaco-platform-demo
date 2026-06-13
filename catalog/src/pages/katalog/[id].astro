@@ -168,20 +168,21 @@ const kpData = {
         <p class="mt-3 text-xs text-muted">{t.card.priceNote}</p>
       </div>
 
-      <div class="mt-8 flex flex-wrap gap-3">
+      {/* CTA: моб — КП на повну ширину, нижче email+telegram 50/50; sm+ — три в ряд, КП ширша. */}
+      <div class="mt-8 grid grid-cols-2 sm:grid-cols-[1.4fr_1fr_1fr] gap-3">
         <button
           type="button"
           data-role="kp-open"
-          class="caps-label bg-brass text-ink px-6 py-3.5 hover:bg-brass-deep transition-colors cursor-pointer"
+          class="col-span-2 sm:col-span-1 caps-label text-center bg-brass text-ink px-6 py-3.5 hover:bg-brass-deep transition-colors cursor-pointer"
         >{t.card.formKp}</button>
         <a
           href={quoteHref}
-          class="caps-label border border-ink px-6 py-3.5 hover:border-brass hover:text-brass transition-colors"
+          class="caps-label text-center border border-ink px-6 py-3.5 hover:border-brass hover:text-brass transition-colors"
         >{t.card.writeEmail}</a>
         <a
           href={requestHref}
           rel="noopener"
-          class="caps-label border border-ink px-6 py-3.5 hover:border-brass hover:text-brass transition-colors"
+          class="caps-label text-center border border-ink px-6 py-3.5 hover:border-brass hover:text-brass transition-colors"
         >{t.card.writeTelegram}</a>
       </div>
     </div>
