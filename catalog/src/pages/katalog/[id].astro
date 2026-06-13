@@ -57,6 +57,33 @@ const mailBody = encodeURIComponent(`Матеріал: ${m.name}\nСторінк
 const quoteHref = `mailto:${BUSINESS.email}?subject=${mailSubject}&body=${mailBody}`;
 const requestHref = `${BUSINESS.telegram}?text=${encodeURIComponent(`${m.name}\n${pageUrl}`)}`;
 const ogImage = m.photos[0] ?? undefined;
+
+// Дані для клієнтської генерації КП у PDF (pdfmake). Площа сляба — дефолт поля вводу.
+const slabAreaDefault = m.slabSize
+  ? Number(((m.slabSize.h * m.slabSize.w) / 1_000_000).toFixed(2))
+  : null;
+const kpData = {
+  id: m.id,
+  name: m.name,
+  type: typeLabel(m.type),
+  line: m.lineName,
+  finish: m.finishes.map(finishLabel).join(", "),
+  format: m.slabSize ? `${m.slabSize.h} × ${m.slabSize.w} мм` : "",
+  thickness: m.thicknesses_mm.length ? `${m.thicknesses_mm.join(", ")} мм` : "",
+  areaDefault: slabAreaDefault,
+  pricePerM2: m.priceFromEurM2,
+  photo: m.photos[0] ?? null,
+  pageUrl,
+  business: {
+    director: "Олександр Швед, Директор · ALTACO",
+    legal: t.footer.legal,
+    phone: BUSINESS.phone,
+    email: BUSINESS.email,
+    site: t.footer.site,
+    overline: t.hero.overline,
+    priceNote: t.card.priceNote,
+  },
+};
 ---
 
 <Base title={title} description={description} jsonLd={jsonLd} ogImage={ogImage}>
@@ -142,10 +169,15 @@ const ogImage = m.photos[0] ?? undefined;
       </div>
 
       <div class="mt-8 flex flex-wrap gap-3">
+        <button
+          type="button"
+          data-role="kp-open"
+          class="caps-label bg-brass text-ink px-6 py-3.5 hover:bg-brass-deep transition-colors cursor-pointer"
+        >{t.card.formKp}</button>
         <a
           href={quoteHref}
-          class="caps-label bg-brass text-ink px-6 py-3.5 hover:bg-brass-deep transition-colors"
-        >{t.card.requestQuote}</a>
+          class="caps-label border border-ink px-6 py-3.5 hover:border-brass hover:text-brass transition-colors"
+        >{t.card.writeEmail}</a>
         <a
           href={requestHref}
           rel="noopener"
@@ -154,6 +186,45 @@ const ogImage = m.photos[0] ?? undefined;
       </div>
     </div>
   </div>
+
+  {/* Дані для клієнтського pdfmake (без рендера на сторінці). */}
+  <script type="application/json" data-role="kp-data" set:html={JSON.stringify(kpData)} is:inline />
+
+  {/* Модальне вікно вводу площі перед формуванням КП. */}
+  <dialog
+    data-role="kp-dialog"
+    class="m-auto w-[min(92vw,28rem)] bg-paper text-body p-6 backdrop:bg-ink/50"
+  >
+    <form method="dialog" class="flex flex-col gap-4">
+      <div>
+        <h2 class="font-serif text-2xl">{t.card.kpTitle}</h2>
+        <p class="mt-1 text-sm text-muted">{t.card.kpHint}</p>
+      </div>
+      <label class="flex flex-col gap-1.5">
+        <span class="caps-label text-muted">{t.card.kpAreaLabel}</span>
+        <input
+          data-role="kp-area"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          class="w-full border border-hairline bg-paper px-3 py-2 text-base"
+        />
+      </label>
+      <p class="font-serif text-xl text-brass-deep" data-role="kp-sum" aria-live="polite"></p>
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          data-role="kp-cancel"
+          class="caps-label border border-ink px-5 py-2.5 hover:border-brass hover:text-brass transition-colors cursor-pointer"
+        >{t.card.kpCancel}</button>
+        <button
+          type="button"
+          data-role="kp-generate"
+          class="caps-label bg-brass text-ink px-5 py-2.5 hover:bg-brass-deep transition-colors cursor-pointer disabled:opacity-60"
+        >{t.card.kpGenerate}</button>
+      </div>
+    </form>
+  </dialog>
 
   {m.description && (
     <section class="mx-auto max-w-7xl px-4 sm:px-8 mt-12">
@@ -177,5 +248,171 @@ const ogImage = m.photos[0] ?? undefined;
         thumbs.forEach((t) => t.setAttribute("aria-pressed", t === thumb ? "true" : "false"));
       });
     }
+  }
+</script>
+
+<script>
+  // Генерація КП у PDF — повністю в браузері (pdfmake), без збереження на сервер.
+  // pdfmake вантажиться динамічно (важкий бандл) лише при формуванні.
+  interface KpData {
+    id: string; name: string; type: string; line: string; finish: string;
+    format: string; thickness: string; areaDefault: number | null;
+    pricePerM2: number | null; photo: string | null; pageUrl: string;
+    business: { director: string; legal: string; phone: string; email: string; site: string; overline: string; priceNote: string };
+  }
+
+  const dataEl = document.querySelector<HTMLScriptElement>('[data-role="kp-data"]');
+  const dialog = document.querySelector<HTMLDialogElement>('[data-role="kp-dialog"]');
+  if (dataEl && dialog) {
+    const data: KpData = JSON.parse(dataEl.textContent || "{}");
+    const openBtn = document.querySelector<HTMLButtonElement>('[data-role="kp-open"]');
+    const cancelBtn = document.querySelector<HTMLButtonElement>('[data-role="kp-cancel"]');
+    const genBtn = document.querySelector<HTMLButtonElement>('[data-role="kp-generate"]');
+    const areaInput = document.querySelector<HTMLInputElement>('[data-role="kp-area"]');
+    const sumEl = document.querySelector<HTMLElement>('[data-role="kp-sum"]');
+
+    const parseArea = (v: string): number | null => {
+      const n = parseFloat(v.replace(",", ".").trim());
+      return Number.isFinite(n) && n > 0 ? n : null;
+    };
+    const round10 = (n: number) => Math.round(n / 10) * 10;
+    const eur = (n: number) => `€${n.toLocaleString("uk-UA")}`;
+    const num2 = (n: number) => n.toLocaleString("uk-UA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function refreshSum(): void {
+      const a = areaInput ? parseArea(areaInput.value) : null;
+      if (sumEl) sumEl.textContent = a && data.pricePerM2 ? `Разом: ${eur(round10(a * data.pricePerM2))}` : "";
+    }
+
+    openBtn?.addEventListener("click", () => {
+      if (areaInput) areaInput.value = data.areaDefault != null ? num2(data.areaDefault) : "";
+      refreshSum();
+      dialog!.showModal();
+    });
+    cancelBtn?.addEventListener("click", () => dialog!.close());
+    areaInput?.addEventListener("input", refreshSum);
+
+    // webp → JPEG dataURL через canvas (pdfmake/PDFKit не читає webp). Помилка → без фото.
+    function photoDataUrl(url: string): Promise<string | null> {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const c = document.createElement("canvas");
+            c.width = img.naturalWidth; c.height = img.naturalHeight;
+            c.getContext("2d")!.drawImage(img, 0, 0);
+            resolve(c.toDataURL("image/jpeg", 0.85));
+          } catch { resolve(null); }
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+      });
+    }
+
+    genBtn?.addEventListener("click", async () => {
+      const area = (areaInput && parseArea(areaInput.value)) ?? data.areaDefault;
+      if (area == null) return;
+      genBtn.disabled = true;
+      try {
+        const [pmMod, vfsMod] = await Promise.all([
+          import("pdfmake/build/pdfmake"),
+          import("pdfmake/build/vfs_fonts"),
+        ]);
+        const pdfMake: any = (pmMod as any).default ?? pmMod;
+        // vfs_fonts: розгортаємо CJS/ESM-обгортки до словника {*.ttf} і реєструємо.
+        let vfs: any = (vfsMod as any).default ?? vfsMod;
+        if (vfs && !vfs["Roboto-Regular.ttf"] && vfs.default) vfs = vfs.default;
+        if (typeof pdfMake.addVirtualFileSystem === "function") pdfMake.addVirtualFileSystem(vfs);
+        else pdfMake.vfs = vfs;
+
+        const photo = data.photo ? await photoDataUrl(data.photo) : null;
+        const sum = data.pricePerM2 != null ? round10(area * data.pricePerM2) : null;
+        const now = new Date();
+        const pad = (n: number) => String(n).padStart(2, "0");
+        const dateStr = now.toLocaleDateString("uk-UA");
+        const kpNo = `КП № ${now.getFullYear()}-${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+        const INK = "#131a24", BRASS = "#9a7d44", MUTED = "#5c6066", LINE = "#d9d4c8";
+
+        const details: [string, string][] = [
+          ["Тип", data.type],
+          ["Лінія", data.line],
+          ...(data.finish ? [["Фініш", data.finish] as [string, string]] : []),
+          ...(data.format ? [["Формат", data.format] as [string, string]] : []),
+          ...(data.thickness ? [["Товщина", data.thickness] as [string, string]] : []),
+        ];
+        const priceCell = (txt: string) => ({ text: txt, alignment: "right", border: [false, false, false, true], borderColor: ["", "", "", LINE] });
+        const labelCell = (txt: string) => ({ text: txt, color: MUTED, border: [false, false, false, true], borderColor: ["", "", "", LINE] });
+
+        const docDefinition: any = {
+          pageSize: "A4",
+          pageMargins: [48, 52, 48, 56],
+          defaultStyle: { font: "Roboto", fontSize: 10, color: INK, lineHeight: 1.25 },
+          content: [
+            {
+              columns: [
+                { stack: [
+                  { text: "ALTACO", fontSize: 22, bold: true },
+                  { text: data.business.overline, fontSize: 7, color: BRASS, characterSpacing: 2, margin: [0, 3, 0, 0] },
+                ] },
+                { stack: [
+                  { text: kpNo, alignment: "right", color: MUTED },
+                  { text: `Дата: ${dateStr}`, alignment: "right", color: MUTED, margin: [0, 2, 0, 0] },
+                  { text: "Дійсна 14 днів", alignment: "right", color: MUTED, margin: [0, 2, 0, 0] },
+                ] },
+              ],
+            },
+            { text: "Комерційна пропозиція", fontSize: 18, bold: true, margin: [0, 20, 0, 14] },
+            {
+              columns: [
+                photo
+                  ? { image: photo, fit: [150, 110], width: 150 }
+                  : { text: "", width: 150 },
+                {
+                  width: "*",
+                  margin: [16, 0, 0, 0],
+                  stack: [
+                    { text: data.name, fontSize: 15, bold: true, margin: [0, 0, 0, 6] },
+                    {
+                      table: { widths: ["auto", "*"], body: details.map(([k, v]) => [
+                        { text: k, color: MUTED },
+                        { text: v },
+                      ]) },
+                      layout: "noBorders",
+                    },
+                  ],
+                },
+              ],
+              margin: [0, 0, 0, 16],
+            },
+            {
+              table: { widths: ["*", "auto"], body: [
+                [labelCell("Площа"), priceCell(`${num2(area)} м²`)],
+                [labelCell("Ціна за м²"), priceCell(data.pricePerM2 != null ? `${eur(data.pricePerM2)} / м²` : "за запитом")],
+                [
+                  { text: "Разом", bold: true, fontSize: 12, border: [false, false, false, false] },
+                  { text: sum != null ? eur(sum) : "за запитом", alignment: "right", bold: true, fontSize: 14, color: BRASS, border: [false, false, false, false] },
+                ],
+              ] },
+              layout: "noBorders",
+            },
+            { text: data.business.priceNote, fontSize: 8, color: MUTED, margin: [0, 8, 0, 18] },
+            { text: "Умови", bold: true, margin: [0, 0, 0, 5] },
+            { ul: [
+              "Термін дії пропозиції — 14 днів від дати формування",
+              "Фінальний розрахунок уточнюється після обміру по місцю",
+            ], color: MUTED, fontSize: 9, margin: [0, 0, 0, 22] },
+            { canvas: [{ type: "line", x1: 0, y1: 0, x2: 499, y2: 0, lineWidth: 0.5, lineColor: LINE }], margin: [0, 0, 0, 10] },
+            { text: data.business.director, bold: true },
+            { text: data.business.legal, color: MUTED, fontSize: 9, margin: [0, 3, 0, 0] },
+            { text: `${data.business.phone} · ${data.business.email} · ${data.business.site}`, color: MUTED, fontSize: 9, margin: [0, 2, 0, 0] },
+          ],
+        };
+
+        pdfMake.createPdf(docDefinition).download(`KP-${data.id}.pdf`);
+        dialog!.close();
+      } finally {
+        genBtn.disabled = false;
+      }
+    });
   }
 </script>

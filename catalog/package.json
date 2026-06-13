@@ -19,7 +19,8 @@
     "@astrojs/sitemap": "^3.2.1",
     "@fontsource-variable/manrope": "^5.2.8",
     "@fontsource-variable/playfair-display": "^5.2.8",
-    "astro": "^5.1.1"
+    "astro": "^5.1.1",
+    "pdfmake": "^0.3.11"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
