@@ -9,6 +9,7 @@ on:
       - claude/move-altaco-platform-demo-xlrcml
     paths:
       - "catalog/**"
+      - "data/**"
       - ".github/workflows/deploy-catalog.yml"
   workflow_dispatch:
 
