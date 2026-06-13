@@ -55,7 +55,7 @@ export const t = {
     specFormat: "Формат",
     specArea: "Площа",
     thicknessOne: "Товщина",
-    slabPriceUnknown: "Точна вартість слаба — за запитом",
+    slabPriceUnknown: "Точна вартість сляба — за запитом",
     applications: "Застосування",
     priceNote: "Ціни в євро · з ПДВ · розрахунок у грн за курсом на день оплати",
     description: "Опис",

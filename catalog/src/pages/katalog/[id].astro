@@ -32,11 +32,11 @@ const description = `${descParts.join(" · ")}. ${t.site.name}, ${BUSINESS.city}
 const price = formatPriceM2(m.priceFromEurM2);
 const jsonLd = [productJsonLd(m, siteUrl), breadcrumbJsonLd(m, siteUrl)];
 
-// Ціна за цілий слаб — розрахунок на етапі build (площа без округлення; ціна → до 10 €).
+// Ціна за цілий сляб — розрахунок на етапі build (площа без округлення; ціна → до 10 €).
 const { areaDisplay, slabPriceDisplay } = slabPricing(m.slabSize, m.priceFromEurM2);
 
 // Порожнє поле → рядок специфікації не рендериться (CLAUDE.md №6).
-// Розмір/товщина переїхали в ціновий блок нижче (Формат/Товщина/Площа), тут не дублюються.
+// Порядок: Тип · Лінія · Фініш · Формат · Товщина · Площа.
 const specs: Array<[string, string]> = [
   [t.card.specType, typeLabel(m.type)],
   [t.card.specLine, m.lineName],
@@ -45,6 +45,9 @@ const specs: Array<[string, string]> = [
   ...(m.finishes.length
     ? [[m.finishes.length > 1 ? t.card.specFinishes : t.card.specFinish, m.finishes.map(finishLabel).join(", ")] as [string, string]]
     : []),
+  ...(m.slabSize ? [[t.card.specFormat, `${m.slabSize.h} × ${m.slabSize.w} мм`] as [string, string]] : []),
+  ...(m.thicknesses_mm.length ? [[t.card.thicknessOne, `${m.thicknesses_mm.join(", ")} мм`] as [string, string]] : []),
+  ...(areaDisplay ? [[t.card.specArea, areaDisplay] as [string, string]] : []),
 ];
 
 // Повний URL сторінки (для mailto body та тексту в Telegram).
@@ -71,7 +74,7 @@ const ogImage = m.photos[0] ?? undefined;
                 loading={i === 0 ? "eager" : "lazy"}
                 decoding="async"
                 data-hero={i}
-                class:list={["h-full w-full object-contain", { hidden: i !== 0 }]}
+                class:list={["h-full w-full object-cover", { hidden: i !== 0 }]}
               />
             ))
           ) : (
@@ -129,31 +132,9 @@ const ogImage = m.photos[0] ?? undefined;
         </div>
       )}
 
-      {/* Ціновий блок: €/м², формат/товщина/площа, ціна за слаб. Статичний → нуль CLS. */}
+      {/* Ціновий блок: лише €/м², €/сляб і примітка. Розміри — у таблиці характеристик. */}
       <div class="mt-10" data-role="pricing">
         <p class="font-serif text-3xl text-brass-deep" data-role="price">{price}</p>
-        {(m.slabSize || m.thicknesses_mm.length) && (
-          <dl class="mt-3 text-sm">
-            {m.slabSize && (
-              <div class="flex gap-2 py-0.5">
-                <dt class="text-muted">{t.card.specFormat}:</dt>
-                <dd class="font-medium">{m.slabSize.h} × {m.slabSize.w} мм</dd>
-              </div>
-            )}
-            {m.thicknesses_mm.length > 0 && (
-              <div class="flex gap-2 py-0.5">
-                <dt class="text-muted">{t.card.thicknessOne}:</dt>
-                <dd class="font-medium">{m.thicknesses_mm.join(", ")} мм</dd>
-              </div>
-            )}
-            {areaDisplay && (
-              <div class="flex gap-2 py-0.5">
-                <dt class="text-muted">{t.card.specArea}:</dt>
-                <dd class="font-medium">{areaDisplay}</dd>
-              </div>
-            )}
-          </dl>
-        )}
         {slabPriceDisplay
           ? <p class="font-serif text-2xl text-brass-deep mt-3">{slabPriceDisplay}</p>
           : <p class="text-sm text-muted mt-3">{t.card.slabPriceUnknown}</p>}
