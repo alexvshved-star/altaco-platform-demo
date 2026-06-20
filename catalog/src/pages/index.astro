@@ -17,8 +17,8 @@ const materials = getMaterials();
 const facets = getFacets(materials);
 const siteUrl = Astro.site!.href;
 
-const title = `${t.catalog.title} | ${t.site.name} — камінь у Києві`;
-const description = t.site.description;
+const title = t.home.title;
+const description = t.home.description;
 
 // Головна = каталог: Organization + WebSite + LocalBusiness + CollectionPage (зі списком позицій).
 const jsonLd = [

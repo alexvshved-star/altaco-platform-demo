@@ -26,9 +26,9 @@ const num2 = new Intl.NumberFormat("uk-UA", {
 });
 
 /**
- * Ціна за цілий сляб (сторінка матеріалу, build-time).
+ * Ціна за цілий слеб (сторінка матеріалу, build-time).
  * Площа НЕ округлюється для розрахунку; для показу — 2 знаки.
- * Ціна за сляб = математичне округлення до 10 €.
+ * Ціна за слеб = математичне округлення до 10 €.
  */
 export function slabPricing(
   slabSize: { w: number; h: number } | undefined,
@@ -39,7 +39,7 @@ export function slabPricing(
   const areaDisplay = `${num2.format(area)} м²`;
   if (pricePerM2 == null || pricePerM2 <= 0) return { areaDisplay, slabPriceDisplay: null };
   const slab = Math.round((area * pricePerM2) / 10) * 10; // округлення до 10 €
-  return { areaDisplay, slabPriceDisplay: `€${eur.format(slab)} / сляб` };
+  return { areaDisplay, slabPriceDisplay: `€${eur.format(slab)} / слеб` };
 }
 
 /** Числове значення ціни для JSON-LD (тільки коли реальна ціна є). */

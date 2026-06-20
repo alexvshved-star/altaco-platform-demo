@@ -29,6 +29,7 @@ export interface PublicMaterial {
   color?: string;
   finish?: string;
   finish_label?: string;
+  finish_normalized?: string;
   thickness_mm?: number;
   size?: string;
   area_m2?: number;
@@ -51,6 +52,18 @@ export interface PublicFeed {
   lines: { id: string; name: string; description?: string }[];
   materials: PublicMaterial[];
 }
+
+// Нормалізований фініш для агентів (стабільний англ. ключ; комерційну назву лишаємо у finish_label).
+const FINISH_NORMALIZED: Record<string, string> = {
+  polished: "polished",
+  satinato: "satin",
+  levigato: "honed",
+  honed: "honed",
+  pec: "textured",
+  brushed: "brushed",
+  matte: "matte",
+  leathered: "leathered",
+};
 
 const round10 = (n: number) => Math.round(n / 10) * 10;
 const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -87,7 +100,13 @@ function toPublic(m: Material, siteUrl: string): PublicMaterial {
     line_name: m.lineName,
     brand: m.lineName,
     ...(colors.length ? { color: colors.join(", ") } : {}),
-    ...(m.finish ? { finish: m.finish, finish_label: finishLabel(m.finish) } : {}),
+    ...(m.finish
+      ? {
+          finish: m.finish,
+          finish_label: finishLabel(m.finish),
+          finish_normalized: FINISH_NORMALIZED[m.finish] ?? m.finish,
+        }
+      : {}),
     ...(m.thicknesses_mm.length ? { thickness_mm: m.thicknesses_mm[0] } : {}),
     ...(m.slabSize ? { size: `${m.slabSize.h} × ${m.slabSize.w} мм` } : {}),
     ...(area != null ? { area_m2: area } : {}),

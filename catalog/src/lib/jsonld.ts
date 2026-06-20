@@ -4,7 +4,7 @@
 
 import { BUSINESS } from "../config";
 import { priceForSchema } from "./format";
-import { typeLabel } from "./catalog";
+import { typeLabel, finishLabel, materialColors, colorLabel } from "./catalog";
 import { withBase } from "./base";
 import type { Material } from "./types";
 
@@ -16,6 +16,12 @@ const AVAIL_URL: Record<Material["availability"], string> = {
 export function productJsonLd(m: Material, siteUrl: string): Record<string, unknown> {
   const url = new URL(m.url, siteUrl).href;
   const price = priceForSchema(m.priceFromEurM2);
+  const colors = materialColors(m);
+  const color = colors.length ? colorLabel(colors[0]) : undefined;
+  const finishes = m.finishes.map(finishLabel).join(", ") || undefined;
+  const size = m.slabSize ? `${m.slabSize.h} × ${m.slabSize.w} мм` : undefined;
+  const area = m.slabSize ? `${((m.slabSize.h * m.slabSize.w) / 1_000_000).toFixed(2)} м²` : undefined;
+  const thickness = m.thicknesses_mm.length ? `${m.thicknesses_mm.join(", ")} мм` : undefined;
 
   const offer: Record<string, unknown> = {
     "@type": "Offer",
@@ -36,15 +42,28 @@ export function productJsonLd(m: Material, siteUrl: string): Record<string, unkn
     };
   }
 
+  // Публічні характеристики як PropertyValue (лише дозволені поля).
+  const props: { name: string; value: string }[] = [];
+  if (finishes) props.push({ name: "Фініш", value: finishes });
+  if (thickness) props.push({ name: "Товщина", value: thickness });
+  if (size) props.push({ name: "Формат слебу", value: size });
+  if (area) props.push({ name: "Площа слебу", value: area });
+  for (const a of m.applications) props.push({ name: "Застосування", value: a });
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: m.name,
+    ...(m.description ? { description: m.description } : {}),
+    ...(m.photos[0] ? { image: new URL(m.photos[0], siteUrl).href } : {}),
     category: typeLabel(m.type),
     brand: { "@type": "Brand", name: m.lineName },
     url,
     material: typeLabel(m.type),
-    ...(m.color ? { color: m.color } : {}),
+    ...(color ? { color } : {}),
+    ...(props.length
+      ? { additionalProperty: props.map((p) => ({ "@type": "PropertyValue", name: p.name, value: p.value })) }
+      : {}),
     offers: offer,
   };
 }

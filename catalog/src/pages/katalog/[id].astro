@@ -20,19 +20,23 @@ export function getStaticPaths() {
 const { material: m } = Astro.props;
 const siteUrl = Astro.site!.href;
 
-const title = `${m.name} — ${typeLabel(m.type)}${m.color ? ` ${m.color}` : ""} | купити сляб у Києві | ${t.site.name}`;
-const descParts = [
-  `${m.name}: ${typeLabel(m.type).toLowerCase()}`,
-  `лінія ${m.lineName}`,
-  m.finishes.length ? `фініш: ${m.finishes.map(finishLabel).join(", ").toLowerCase()}` : null,
-  m.origin ? `походження: ${m.origin}` : null,
-].filter(Boolean);
-const description = `${descParts.join(" · ")}. ${t.site.name}, ${BUSINESS.city}.`;
+// Метадані за шаблоном ТЗ: «[Назва] — [тип], [фініш], [товщина] | ALTACO».
+const finishStr = m.finishes.length ? m.finishes.map(finishLabel).join(", ") : "";
+const thicknessStr = m.thicknesses_mm.length ? `${m.thicknesses_mm.join(", ")} мм` : "";
+const sizeStr = m.slabSize ? `${m.slabSize.h} × ${m.slabSize.w} мм` : "";
+const headParts = [typeLabel(m.type), finishStr, thicknessStr].filter(Boolean).join(", ");
+const statusWord = m.stockLocation === "on_order" ? "Під замовлення" : "В наявності";
+const statusCity = m.stockLocation === "dnipro" ? "Дніпро" : "Київ";
+const title = `${m.name} — ${headParts} | ${t.site.name}`;
+const description =
+  `${m.name} — ${headParts}.` +
+  (sizeStr ? ` Формат слебу: ${sizeStr}.` : "") +
+  ` Наявність: ${statusWord}, ${statusCity}. Запит КП через ${t.site.name}.`;
 
 const price = formatPriceM2(m.priceFromEurM2);
 const jsonLd = [productJsonLd(m, siteUrl), breadcrumbJsonLd(m, siteUrl)];
 
-// Ціна за цілий сляб — розрахунок на етапі build (площа без округлення; ціна → до 10 €).
+// Ціна за цілий слеб — розрахунок на етапі build (площа без округлення; ціна → до 10 €).
 const { areaDisplay, slabPriceDisplay } = slabPricing(m.slabSize, m.priceFromEurM2);
 
 // Порожнє поле → рядок специфікації не рендериться (CLAUDE.md №6).
@@ -58,7 +62,7 @@ const quoteHref = `mailto:${BUSINESS.email}?subject=${mailSubject}&body=${mailBo
 const requestHref = `${BUSINESS.telegram}?text=${encodeURIComponent(`${m.name}\n${pageUrl}`)}`;
 const ogImage = m.photos[0] ?? undefined;
 
-// Дані для клієнтської генерації КП у PDF (pdfmake). Площа сляба — дефолт поля вводу.
+// Дані для клієнтської генерації КП у PDF (pdfmake). Площа слеба — дефолт поля вводу.
 const slabAreaDefault = m.slabSize
   ? Number(((m.slabSize.h * m.slabSize.w) / 1_000_000).toFixed(2))
   : null;
@@ -91,7 +95,7 @@ const kpData = {
     <div class="lg:sticky lg:top-0">
       {/* Галерея: hero = фото 1; мініатюри перемикають hero (PHASE1_BRIEF §1: «у картці всі три»). */}
       <div class="relative" data-gallery>
-        {/* Фіксований aspect-ratio контейнера → нуль CLS; object-contain показує сляб повністю. */}
+        {/* Фіксований aspect-ratio контейнера → нуль CLS; object-contain показує слеб повністю. */}
         <div class="aspect-[16/10] w-full overflow-hidden bg-paper">
           {m.photos.length > 0 ? (
             m.photos.map((src, i) => (
@@ -159,7 +163,7 @@ const kpData = {
         </div>
       )}
 
-      {/* Ціновий блок: лише €/м², €/сляб і примітка. Розміри — у таблиці характеристик. */}
+      {/* Ціновий блок: лише €/м², €/слеб і примітка. Розміри — у таблиці характеристик. */}
       <div class="mt-10" data-role="pricing">
         <p class="font-serif text-3xl text-brass-deep" data-role="price">{price}</p>
         {slabPriceDisplay

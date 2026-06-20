@@ -51,6 +51,7 @@
           "color": { "type": "string" },
           "finish": { "type": "string" },
           "finish_label": { "type": "string" },
+          "finish_normalized": { "type": "string" },
           "thickness_mm": { "type": "number", "minimum": 0 },
           "size": { "type": "string" },
           "area_m2": { "type": "number", "minimum": 0 },

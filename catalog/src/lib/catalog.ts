@@ -226,13 +226,10 @@ export function finishLabel(f: string): string {
   return FINISH_LABELS[f] ?? f;
 }
 
-/** Змістовний alt для фото матеріалу: назва, тип, фініш, бренд — без загального «фото/камінь». */
+/** Змістовний alt: «[Назва] — [тип], поверхня [фініш], ALTACO» — без загального «фото/камінь». */
 export function imageAlt(m: Material): string {
-  const parts = [m.name, "—", typeLabel(m.type)];
-  if (m.finish) parts.push(`${finishLabel(m.finish).toLowerCase()},`);
-  else parts[2] = `${parts[2]},`;
-  parts.push("ALTACO");
-  return parts.join(" ");
+  const finish = m.finish ? `, поверхня ${finishLabel(m.finish)}` : "";
+  return `${m.name} — ${typeLabel(m.type)}${finish}, ALTACO`;
 }
 
 export const ALL_MATERIALS_COUNT = all.length;
