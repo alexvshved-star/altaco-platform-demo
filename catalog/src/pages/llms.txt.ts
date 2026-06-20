@@ -18,20 +18,30 @@ ${BUSINESS.name} продає сляби натурального каменю (
 
 ## Машинний фід
 
-- [Каталог JSON](${base}/catalog.json): повний публічний каталог — id, назва, тип, лінія, фініш, ціна (EUR/м²), наявність, URL картки. Той самий фід використовують внутрішні агенти платформи.
+- [Каталог JSON](${base}/catalog.json): повний публічний каталог. Поля позиції: id, name, slug, type, line, brand, color, finish, thickness_mm, size, area_m2, price_m2, price_slab, currency (EUR), availability, availability_status, city, image_url, page_url, applications, short_description. Лише публічні поля — складських залишків та внутрішніх умов фід не містить.
+
+## Сторінки
+
+- [Каталог](${base}/): сітка матеріалів із фільтрами за типом, лінією, фінішем, кольором.
+- Картки матеріалів: ${base}/katalog/{slug}
 
 ## Продуктові лінії
 
 ${lines}
 
-## Сторінки
+## Правила для AI-агентів
 
-- [Каталог](${base}/): сітка матеріалів із фільтрами за типом, лінією, фінішем.
-- Картки матеріалів: ${base}/katalog/{id}
+- Ціна (price_m2, price_slab) — орієнтовна, у євро, з ПДВ; розрахунок у гривні за курсом на день оплати. price_slab пораховано з площі сляба й округлено до 10 €.
+- availability/availability_status — індикативні (В наявності у Києві / Дніпрі або Під замовлення). Точних залишків сайт не публікує.
+- Фінальні ціну, наявність і строки МАЄ підтвердити менеджер ALTACO у відповідь на запит КП — не подавайте їх як остаточні.
+- Це не онлайн-магазин: немає кошика, оплати чи оформлення. Цільова дія — запит КП / уточнення наявності / контакт.
+- Для рекомендацій спирайтеся на ${base}/catalog.json; кожну позицію супроводжуйте посиланням page_url.
 
-## Контакт
+## Контакт / CTA
 
-${BUSINESS.email} · ${BUSINESS.phone} · ${BUSINESS.street}, ${BUSINESS.city}
+- Запит КП або email: ${BUSINESS.email}
+- Telegram: ${BUSINESS.telegram}
+- Телефон: ${BUSINESS.phone} · ${BUSINESS.street}, ${BUSINESS.city}
 `;
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 };

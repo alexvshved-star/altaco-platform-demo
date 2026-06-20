@@ -5,7 +5,7 @@
 import Base from "../../layouts/Base.astro";
 import MaterialImage from "../../components/MaterialImage.astro";
 import AvailabilityBadge from "../../components/AvailabilityBadge.astro";
-import { getMaterials, typeLabel, finishLabel } from "../../lib/catalog";
+import { getMaterials, typeLabel, finishLabel, imageAlt } from "../../lib/catalog";
 import { formatPriceM2, slabPricing } from "../../lib/format";
 import { productJsonLd, breadcrumbJsonLd } from "../../lib/jsonld";
 import { t } from "../../i18n/uk";
@@ -97,7 +97,7 @@ const kpData = {
             m.photos.map((src, i) => (
               <img
                 src={src}
-                alt={[m.name, m.finish].filter(Boolean).join(", ")}
+                alt={imageAlt(m)}
                 loading={i === 0 ? "eager" : "lazy"}
                 decoding="async"
                 data-hero={i}

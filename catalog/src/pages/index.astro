@@ -5,7 +5,12 @@ import Base from "../layouts/Base.astro";
 import Hero from "../components/Hero.astro";
 import MaterialCard from "../components/MaterialCard.astro";
 import { getMaterials, getFacets } from "../lib/catalog";
-import { localBusinessJsonLd } from "../lib/jsonld";
+import {
+  localBusinessJsonLd,
+  organizationJsonLd,
+  webSiteJsonLd,
+  collectionPageJsonLd,
+} from "../lib/jsonld";
 import { t, pluralMaterials } from "../i18n/uk";
 
 const materials = getMaterials();
@@ -14,9 +19,22 @@ const siteUrl = Astro.site!.href;
 
 const title = `${t.catalog.title} | ${t.site.name} — камінь у Києві`;
 const description = t.site.description;
+
+// Головна = каталог: Organization + WebSite + LocalBusiness + CollectionPage (зі списком позицій).
+const jsonLd = [
+  organizationJsonLd(siteUrl),
+  webSiteJsonLd(siteUrl),
+  localBusinessJsonLd(siteUrl),
+  collectionPageJsonLd(
+    siteUrl,
+    materials.map((m) => ({ name: m.name, url: m.url })),
+    title,
+    description,
+  ),
+];
 ---
 
-<Base title={title} description={description} jsonLd={[localBusinessJsonLd(siteUrl)]}>
+<Base title={title} description={description} jsonLd={jsonLd}>
   <Hero />
   <section id="catalog" class="scroll-mt-4 mx-auto max-w-7xl px-4 sm:px-6">
     <div class="border-b border-hairline py-4" data-role="filterbar">

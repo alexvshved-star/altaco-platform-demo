@@ -37,20 +37,33 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "name", "type", "line", "url", "currency", "availability"],
+        "required": ["id", "name", "slug", "type", "line", "brand", "page_url", "currency", "availability", "availability_status", "price_m2", "price_slab"],
         "additionalProperties": false,
         "properties": {
           "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
           "name": { "type": "string" },
+          "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
           "type": { "type": "string" },
+          "type_label": { "type": "string" },
           "line": { "type": "string" },
           "line_name": { "type": "string" },
+          "brand": { "type": "string" },
+          "color": { "type": "string" },
           "finish": { "type": "string" },
-          "tags": { "type": "array", "items": { "type": "string" } },
-          "price_eur_m2": { "type": ["number", "null"], "minimum": 0 },
+          "finish_label": { "type": "string" },
+          "thickness_mm": { "type": "number", "minimum": 0 },
+          "size": { "type": "string" },
+          "area_m2": { "type": "number", "minimum": 0 },
+          "price_m2": { "type": ["number", "null"], "minimum": 0 },
+          "price_slab": { "type": ["number", "null"], "minimum": 0 },
           "currency": { "type": "string", "enum": ["EUR"] },
           "availability": { "type": "string", "enum": ["InStock", "PreOrder"] },
-          "url": { "type": "string", "format": "uri" }
+          "availability_status": { "type": "string" },
+          "city": { "type": "string" },
+          "image_url": { "type": "string", "format": "uri" },
+          "page_url": { "type": "string", "format": "uri" },
+          "applications": { "type": "array", "items": { "type": "string" } },
+          "short_description": { "type": "string" }
         }
       }
     }

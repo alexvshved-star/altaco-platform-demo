@@ -2,6 +2,7 @@
 // Одне зображення матеріалу за індексом. Реальне фото (PHOTO_GUIDE.md) або,
 // якщо файлів немає, генерований патерн-плейсхолдер у DOM (Р-07).
 import { placeholderSvg } from "../lib/placeholder";
+import { imageAlt } from "../lib/catalog";
 import type { Material } from "../lib/types";
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 
 const { material: m, index = 0, class: cls = "", loading = "lazy" } = Astro.props;
 const src = m.photos[index] ?? null;
-const alt = [m.name, m.finish].filter(Boolean).join(", ");
+const alt = imageAlt(m);
 ---
 
 {src ? (
