@@ -147,6 +147,8 @@ export function getSchemaVersion(): string {
 export interface Facet {
   key: string;
   label: string;
+  /** Текст першого пункту селекта (стан «усі значення»). */
+  placeholder: string;
   values: { value: string; label: string; count: number }[];
 }
 
@@ -161,6 +163,7 @@ function countBy(materials: Material[], pick: (m: Material) => string[]): Map<st
 function facet(
   key: string,
   label: string,
+  placeholder: string,
   materials: Material[],
   pick: (m: Material) => string[],
   labelFor: (v: string) => string = (v) => v,
@@ -170,15 +173,15 @@ function facet(
   const values = [...counts.entries()]
     .map(([value, count]) => ({ value, label: labelFor(value), count }))
     .sort((a, b) => a.label.localeCompare(b.label, "uk"));
-  return { key, label, values };
+  return { key, label, placeholder, values };
 }
 
 export function getFacets(materials: Material[] = getMaterials()): Facet[] {
   const facets: Array<Facet | null> = [
-    facet("type", "Тип каменю", materials, (m) => [m.type], typeLabel),
-    facet("line", "Лінія / колекція", materials, (m) => [m.line], getLineName),
-    facet("finish", "Фініш", materials, (m) => m.finishes, finishLabel),
-    facet("color", "Колір", materials, materialColors, colorLabel),
+    facet("type", "Тип каменю", "Усі типи каменю", materials, (m) => [m.type], typeLabel),
+    facet("line", "Виробник / колекція", "Усі колекції", materials, (m) => [m.line], getLineName),
+    facet("finish", "Обробка поверхні", "Усі види обробки", materials, (m) => m.finishes, finishLabel),
+    facet("color", "Колір", "Усі кольори", materials, materialColors, colorLabel),
   ];
   return facets.filter((f): f is Facet => f !== null);
 }

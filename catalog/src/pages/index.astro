@@ -49,7 +49,7 @@ const jsonLd = [
               data-facet={f.key}
               aria-label={f.label}
             >
-              <option value="">—</option>
+              <option value="">{f.placeholder}</option>
               {f.values.map((v) => (
                 <option value={v.value}>{v.label} ({v.count})</option>
               ))}
@@ -75,7 +75,7 @@ const jsonLd = [
         <label class="flex flex-col gap-1.5">
           <span class="caps-label text-muted">{t.catalog.sort}</span>
           <select class="border border-hairline bg-paper px-2 py-1.5 text-sm" data-role="sort" aria-label={t.catalog.sort}>
-            <option value="">—</option>
+            <option value="">{t.catalog.sortDefault}</option>
             <option value="price-asc">{t.catalog.sortPriceAsc}</option>
             <option value="price-desc">{t.catalog.sortPriceDesc}</option>
             <option value="name">{t.catalog.sortName}</option>

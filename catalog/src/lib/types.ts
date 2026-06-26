@@ -13,7 +13,7 @@ export interface Line {
   description?: string;
 }
 
-/** Майбутня послебна група — зберігається в моделі повністю, навіть якщо публічно не показується. */
+/** Майбутня послябна група — зберігається в моделі повністю, навіть якщо публічно не показується. */
 export interface SlabGroup {
   finish?: string;
   thickness_mm?: number;

@@ -30,13 +30,13 @@ const statusCity = m.stockLocation === "dnipro" ? "Дніпро" : "Київ";
 const title = `${m.name} — ${headParts} | ${t.site.name}`;
 const description =
   `${m.name} — ${headParts}.` +
-  (sizeStr ? ` Формат слебу: ${sizeStr}.` : "") +
+  (sizeStr ? ` Формат слябу: ${sizeStr}.` : "") +
   ` Наявність: ${statusWord}, ${statusCity}. Запит КП через ${t.site.name}.`;
 
 const price = formatPriceM2(m.priceFromEurM2);
 const jsonLd = [productJsonLd(m, siteUrl), breadcrumbJsonLd(m, siteUrl)];
 
-// Ціна за цілий слеб — розрахунок на етапі build (площа без округлення; ціна → до 10 €).
+// Ціна за цілий сляб — розрахунок на етапі build (площа без округлення; ціна → до 10 €).
 const { areaDisplay, slabPriceDisplay } = slabPricing(m.slabSize, m.priceFromEurM2);
 
 // Порожнє поле → рядок специфікації не рендериться (CLAUDE.md №6).
@@ -62,7 +62,7 @@ const quoteHref = `mailto:${BUSINESS.email}?subject=${mailSubject}&body=${mailBo
 const requestHref = `${BUSINESS.telegram}?text=${encodeURIComponent(`${m.name}\n${pageUrl}`)}`;
 const ogImage = m.photos[0] ?? undefined;
 
-// Дані для клієнтської генерації КП у PDF (pdfmake). Площа слеба — дефолт поля вводу.
+// Дані для клієнтської генерації КП у PDF (pdfmake). Площа сляба — дефолт поля вводу.
 const slabAreaDefault = m.slabSize
   ? Number(((m.slabSize.h * m.slabSize.w) / 1_000_000).toFixed(2))
   : null;
@@ -95,7 +95,7 @@ const kpData = {
     <div class="lg:sticky lg:top-0">
       {/* Галерея: hero = фото 1; мініатюри перемикають hero (PHASE1_BRIEF §1: «у картці всі три»). */}
       <div class="relative" data-gallery>
-        {/* Фіксований aspect-ratio контейнера → нуль CLS; object-contain показує слеб повністю. */}
+        {/* Фіксований aspect-ratio контейнера → нуль CLS; object-contain показує сляб повністю. */}
         <div class="aspect-[16/10] w-full overflow-hidden bg-paper">
           {m.photos.length > 0 ? (
             m.photos.map((src, i) => (
@@ -163,7 +163,7 @@ const kpData = {
         </div>
       )}
 
-      {/* Ціновий блок: лише €/м², €/слеб і примітка. Розміри — у таблиці характеристик. */}
+      {/* Ціновий блок: лише €/м², €/сляб і примітка. Розміри — у таблиці характеристик. */}
       <div class="mt-10" data-role="pricing">
         <p class="font-serif text-3xl text-brass-deep" data-role="price">{price}</p>
         {slabPriceDisplay
@@ -205,16 +205,30 @@ const kpData = {
         <h2 class="font-serif text-2xl">{t.card.kpTitle}</h2>
         <p class="mt-1 text-sm text-muted">{t.card.kpHint}</p>
       </div>
-      <label class="flex flex-col gap-1.5">
-        <span class="caps-label text-muted">{t.card.kpAreaLabel}</span>
-        <input
-          data-role="kp-area"
-          type="text"
-          inputmode="decimal"
-          autocomplete="off"
-          class="w-full border border-hairline bg-paper px-3 py-2 text-base"
-        />
-      </label>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex flex-col gap-1.5">
+          <span class="caps-label text-muted">{t.card.kpAreaLabel}</span>
+          <input
+            data-role="kp-area"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            class="w-full border border-hairline bg-paper px-3 py-2 text-base"
+          />
+        </label>
+        <label class="flex flex-col gap-1.5">
+          <span class="caps-label text-muted">{t.card.kpQtyLabel}</span>
+          <input
+            data-role="kp-qty"
+            type="number"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            autocomplete="off"
+            class="w-full border border-hairline bg-paper px-3 py-2 text-base"
+          />
+        </label>
+      </div>
       <p class="font-serif text-xl text-brass-deep" data-role="kp-sum" aria-live="polite"></p>
       <div class="flex justify-end gap-3">
         <button
@@ -274,28 +288,38 @@ const kpData = {
     const cancelBtn = document.querySelector<HTMLButtonElement>('[data-role="kp-cancel"]');
     const genBtn = document.querySelector<HTMLButtonElement>('[data-role="kp-generate"]');
     const areaInput = document.querySelector<HTMLInputElement>('[data-role="kp-area"]');
+    const qtyInput = document.querySelector<HTMLInputElement>('[data-role="kp-qty"]');
     const sumEl = document.querySelector<HTMLElement>('[data-role="kp-sum"]');
 
     const parseArea = (v: string): number | null => {
       const n = parseFloat(v.replace(",", ".").trim());
       return Number.isFinite(n) && n > 0 ? n : null;
     };
-    const round10 = (n: number) => Math.round(n / 10) * 10;
+    const parseQty = (v: string): number => {
+      const n = parseInt(v.trim(), 10);
+      return Number.isFinite(n) && n > 0 ? n : 1;
+    };
+    // КАНОНІЧНА формула (одна для картки, модалки, PDF): Площа × Кількість × Ціна/м²,
+    // округлення до цілого євро на виводі. Збігається зі slabTotal() у format.ts.
+    const total = (area: number, qty: number, price: number) => Math.round(area * qty * price);
     const eur = (n: number) => `€${n.toLocaleString("uk-UA")}`;
     const num2 = (n: number) => n.toLocaleString("uk-UA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     function refreshSum(): void {
       const a = areaInput ? parseArea(areaInput.value) : null;
-      if (sumEl) sumEl.textContent = a && data.pricePerM2 ? `Разом: ${eur(round10(a * data.pricePerM2))}` : "";
+      const q = qtyInput ? parseQty(qtyInput.value) : 1;
+      if (sumEl) sumEl.textContent = a && data.pricePerM2 ? `Разом: ${eur(total(a, q, data.pricePerM2))}` : "";
     }
 
     openBtn?.addEventListener("click", () => {
       if (areaInput) areaInput.value = data.areaDefault != null ? num2(data.areaDefault) : "";
+      if (qtyInput) qtyInput.value = "1";
       refreshSum();
       dialog!.showModal();
     });
     cancelBtn?.addEventListener("click", () => dialog!.close());
     areaInput?.addEventListener("input", refreshSum);
+    qtyInput?.addEventListener("input", refreshSum);
 
     // webp → JPEG dataURL через canvas (pdfmake/PDFKit не читає webp). Помилка → без фото.
     function photoDataUrl(url: string): Promise<string | null> {
@@ -316,6 +340,7 @@ const kpData = {
 
     genBtn?.addEventListener("click", async () => {
       const area = (areaInput && parseArea(areaInput.value)) ?? data.areaDefault;
+      const qty = qtyInput ? parseQty(qtyInput.value) : 1;
       if (area == null) return;
       genBtn.disabled = true;
       try {
@@ -331,7 +356,7 @@ const kpData = {
         else pdfMake.vfs = vfs;
 
         const photo = data.photo ? await photoDataUrl(data.photo) : null;
-        const sum = data.pricePerM2 != null ? round10(area * data.pricePerM2) : null;
+        const sum = data.pricePerM2 != null ? total(area, qty, data.pricePerM2) : null;
         const now = new Date();
         const pad = (n: number) => String(n).padStart(2, "0");
         const dateStr = now.toLocaleDateString("uk-UA");
@@ -391,7 +416,8 @@ const kpData = {
             },
             {
               table: { widths: ["*", "auto"], body: [
-                [labelCell("Площа"), priceCell(`${num2(area)} м²`)],
+                [labelCell("Площа сляба"), priceCell(`${num2(area)} м²`)],
+                [labelCell("Кількість"), priceCell(`${qty} шт`)],
                 [labelCell("Ціна за м²"), priceCell(data.pricePerM2 != null ? `${eur(data.pricePerM2)} / м²` : "за запитом")],
                 [
                   { text: "Разом", bold: true, fontSize: 12, border: [false, false, false, false] },

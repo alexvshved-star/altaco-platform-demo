@@ -13,6 +13,7 @@ import {
   colorLabel,
 } from "./catalog";
 import { withBase } from "./base";
+import { slabAreaM2, slabTotal } from "./format";
 import { BUSINESS } from "../config";
 import { t } from "../i18n/uk";
 import type { Material } from "./types";
@@ -65,9 +66,6 @@ const FINISH_NORMALIZED: Record<string, string> = {
   leathered: "leathered",
 };
 
-const round10 = (n: number) => Math.round(n / 10) * 10;
-const round2 = (n: number) => Math.round(n * 100) / 100;
-
 function availabilityStatus(m: Material): { status: string; city?: string } {
   if (m.stockLocation === "kyiv") return { status: t.card.inStockKyiv, city: "Київ" };
   if (m.stockLocation === "dnipro") return { status: t.card.inStockDnipro, city: "Дніпро" };
@@ -82,11 +80,8 @@ function firstSentence(text: string): string | undefined {
 
 function toPublic(m: Material, siteUrl: string): PublicMaterial {
   const colors = materialColors(m).map(colorLabel);
-  const area = m.slabSize ? round2((m.slabSize.h * m.slabSize.w) / 1_000_000) : undefined;
-  const priceSlab =
-    m.slabSize && m.priceFromEurM2 != null
-      ? round10(((m.slabSize.h * m.slabSize.w) / 1_000_000) * m.priceFromEurM2)
-      : null;
+  const area = slabAreaM2(m.slabSize) ?? undefined;
+  const priceSlab = area != null && m.priceFromEurM2 != null ? slabTotal(area, 1, m.priceFromEurM2) : null;
   const avail = availabilityStatus(m);
   const photo = m.photos[0] ?? null;
 

@@ -26,20 +26,31 @@ const num2 = new Intl.NumberFormat("uk-UA", {
 });
 
 /**
- * Ціна за цілий слеб (сторінка матеріалу, build-time).
- * Площа НЕ округлюється для розрахунку; для показу — 2 знаки.
- * Ціна за слеб = математичне округлення до 10 €.
+ * Канонічний розрахунок сляба — ЄДИНЕ джерело для картки, модалки КП і PDF.
+ * Площа округлюється до 2 знаків (як показано й як дефолт у модалці).
+ * Разом = Площа × Кількість × Ціна/м², округлення до цілого євро на виводі.
  */
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+export function slabAreaM2(slabSize: { w: number; h: number } | undefined): number | null {
+  if (!slabSize) return null;
+  return round2((slabSize.h * slabSize.w) / 1_000_000);
+}
+
+export function slabTotal(areaM2: number, qty: number, pricePerM2: number): number {
+  return Math.round(areaM2 * qty * pricePerM2);
+}
+
 export function slabPricing(
   slabSize: { w: number; h: number } | undefined,
   pricePerM2: number | null,
 ): { areaDisplay: string | null; slabPriceDisplay: string | null } {
-  if (!slabSize) return { areaDisplay: null, slabPriceDisplay: null };
-  const area = (slabSize.h * slabSize.w) / 1_000_000; // м², без округлення
+  const area = slabAreaM2(slabSize);
+  if (area == null) return { areaDisplay: null, slabPriceDisplay: null };
   const areaDisplay = `${num2.format(area)} м²`;
   if (pricePerM2 == null || pricePerM2 <= 0) return { areaDisplay, slabPriceDisplay: null };
-  const slab = Math.round((area * pricePerM2) / 10) * 10; // округлення до 10 €
-  return { areaDisplay, slabPriceDisplay: `€${eur.format(slab)} / слеб` };
+  // qty=1 для «ціна за сляб» на картці.
+  return { areaDisplay, slabPriceDisplay: `€${eur.format(slabTotal(area, 1, pricePerM2))} / сляб` };
 }
 
 /** Числове значення ціни для JSON-LD (тільки коли реальна ціна є). */

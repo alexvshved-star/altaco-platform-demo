@@ -46,8 +46,8 @@ export function productJsonLd(m: Material, siteUrl: string): Record<string, unkn
   const props: { name: string; value: string }[] = [];
   if (finishes) props.push({ name: "Фініш", value: finishes });
   if (thickness) props.push({ name: "Товщина", value: thickness });
-  if (size) props.push({ name: "Формат слебу", value: size });
-  if (area) props.push({ name: "Площа слебу", value: area });
+  if (size) props.push({ name: "Формат слябу", value: size });
+  if (area) props.push({ name: "Площа слябу", value: area });
   for (const a of m.applications) props.push({ name: "Застосування", value: a });
 
   return {
