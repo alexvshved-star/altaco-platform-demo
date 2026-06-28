@@ -316,11 +316,33 @@ const kpData = {
       if (sumEl) sumEl.textContent = a && data.pricePerM2 ? `Разом: ${eur(total(a, q, data.pricePerM2))}` : "";
     }
 
+    // pdfmake (важкий бандл) + кириличні шрифти реєструються ОДИН раз. Прогріваємо на
+    // відкритті модалки, щоб у момент кліку «Сформувати PDF» бібліотека вже була готова.
+    let pdfMakeReady: Promise<any> | null = null;
+    function loadPdfMake(): Promise<any> {
+      if (!pdfMakeReady) {
+        pdfMakeReady = Promise.all([
+          import("pdfmake/build/pdfmake"),
+          import("pdfmake/build/vfs_fonts"),
+        ]).then(([pmMod, vfsMod]) => {
+          const pdfMake: any = (pmMod as any).default ?? pmMod;
+          // vfs_fonts: розгортаємо CJS/ESM-обгортки до словника {*.ttf} і реєструємо.
+          let vfs: any = (vfsMod as any).default ?? vfsMod;
+          if (vfs && !vfs["Roboto-Regular.ttf"] && vfs.default) vfs = vfs.default;
+          if (typeof pdfMake.addVirtualFileSystem === "function") pdfMake.addVirtualFileSystem(vfs);
+          else pdfMake.vfs = vfs;
+          return pdfMake;
+        }).catch((e) => { pdfMakeReady = null; throw e; });
+      }
+      return pdfMakeReady;
+    }
+
     openBtn?.addEventListener("click", () => {
       if (areaInput) areaInput.value = data.areaDefault != null ? num2(data.areaDefault) : "";
       if (qtyInput) qtyInput.value = "1";
       refreshSum();
       dialog!.showModal();
+      loadPdfMake().catch(() => {}); // прогрів; реальні помилки спливуть на генерації
     });
     cancelBtn?.addEventListener("click", () => dialog!.close());
     areaInput?.addEventListener("input", refreshSum);
@@ -349,16 +371,7 @@ const kpData = {
       if (area == null) return;
       genBtn.disabled = true;
       try {
-        const [pmMod, vfsMod] = await Promise.all([
-          import("pdfmake/build/pdfmake"),
-          import("pdfmake/build/vfs_fonts"),
-        ]);
-        const pdfMake: any = (pmMod as any).default ?? pmMod;
-        // vfs_fonts: розгортаємо CJS/ESM-обгортки до словника {*.ttf} і реєструємо.
-        let vfs: any = (vfsMod as any).default ?? vfsMod;
-        if (vfs && !vfs["Roboto-Regular.ttf"] && vfs.default) vfs = vfs.default;
-        if (typeof pdfMake.addVirtualFileSystem === "function") pdfMake.addVirtualFileSystem(vfs);
-        else pdfMake.vfs = vfs;
+        const pdfMake: any = await loadPdfMake();
 
         const photo = data.photo ? await photoDataUrl(data.photo) : null;
         const sum = data.pricePerM2 != null ? total(area, qty, data.pricePerM2) : null;
@@ -459,6 +472,10 @@ const kpData = {
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 4000);
         dialog!.close();
+      } catch (e) {
+        // Раніше помилка генерації була «тихою». Тепер — у консоль + підказка користувачу.
+        console.error("KP PDF generation failed:", e);
+        if (sumEl) sumEl.textContent = "Не вдалося сформувати PDF. Спробуйте ще раз.";
       } finally {
         genBtn.disabled = false;
       }
