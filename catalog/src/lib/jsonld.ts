@@ -28,6 +28,7 @@ export function productJsonLd(m: Material, siteUrl: string): Record<string, unkn
     priceCurrency: "EUR",
     availability: AVAIL_URL[m.availability],
     itemCondition: "https://schema.org/NewCondition",
+    areaServed: "Україна",
     url,
     seller: { "@type": "Organization", name: BUSINESS.name },
   };
@@ -103,6 +104,7 @@ export function organizationJsonLd(siteUrl: string): Record<string, unknown> {
       addressCountry: BUSINESS.country,
       postalCode: BUSINESS.postalCode,
     },
+    areaServed: "Україна",
   };
 }
 
@@ -165,6 +167,6 @@ export function localBusinessJsonLd(siteUrl: string): Record<string, unknown> {
       postalCode: BUSINESS.postalCode,
     },
     openingHours: BUSINESS.hours,
-    areaServed: BUSINESS.city,
+    areaServed: "Україна",
   };
 }

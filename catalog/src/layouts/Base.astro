@@ -12,9 +12,11 @@ interface Props {
   /** Додаткові JSON-LD блоки сторінки (вже згенеровані з контракту). */
   jsonLd?: Record<string, unknown>[];
   ogImage?: string;
+  /** og:type — «website» (дефолт) або «product» на сторінці матеріалу. */
+  ogType?: string;
 }
 
-const { title, description, jsonLd = [], ogImage } = Astro.props;
+const { title, description, jsonLd = [], ogImage, ogType = "website" } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -31,7 +33,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     {/* hreflang-структура: UA зараз, EN/RU додаються тут же (PHASE1_BRIEF §5) */}
     <link rel="alternate" hreflang="uk" href={canonical.href} />
     <link rel="alternate" hreflang="x-default" href={canonical.href} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={t.site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

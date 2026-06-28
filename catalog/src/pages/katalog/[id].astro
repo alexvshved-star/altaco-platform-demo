@@ -20,18 +20,23 @@ export function getStaticPaths() {
 const { material: m } = Astro.props;
 const siteUrl = Astro.site!.href;
 
-// Метадані за шаблоном ТЗ: «[Назва] — [тип], [фініш], [товщина] | ALTACO».
-const finishStr = m.finishes.length ? m.finishes.map(finishLabel).join(", ") : "";
-const thicknessStr = m.thicknesses_mm.length ? `${m.thicknesses_mm.join(", ")} мм` : "";
-const sizeStr = m.slabSize ? `${m.slabSize.h} × ${m.slabSize.w} мм` : "";
-const headParts = [typeLabel(m.type), finishStr, thicknessStr].filter(Boolean).join(", ");
-const statusWord = m.stockLocation === "on_order" ? "Під замовлення" : "В наявності";
-const statusCity = m.stockLocation === "dnipro" ? "Дніпро" : "Київ";
-const title = `${m.name} — ${headParts} | ${t.site.name}`;
+// SEO-метадані генеруються з полів матеріалу (5b): тип, колекція, обробка, товщина,
+// місто наявності, ціна. Місто — зі stock_location; in-stock і під замовлення мають
+// різні шаблони, наскрізно — можливість поставки під замовлення по Україні.
+const typeL = typeLabel(m.type);
+const collection = m.lineName;
+const inStock = m.stockLocation !== "on_order";
+const cityLoc = m.stockLocation === "dnipro" ? "Дніпрі" : "Києві";
+const finishText = m.finishes.length ? m.finishes.map(finishLabel).join(", ") : "—";
+const thicknessText = m.thicknesses_mm.length ? `${m.thicknesses_mm.join(", ")} мм` : "—";
+const availText = inStock ? `В наявності у ${cityLoc}` : "Під замовлення";
+const priceText = m.priceFromEurM2 ? formatPriceM2(m.priceFromEurM2) : "за запитом";
+const title = inStock
+  ? `${m.name} — ${typeL}, ${collection} | сляб у ${cityLoc} та під замовлення | ${t.site.name}`
+  : `${m.name} — ${typeL}, ${collection} | під замовлення в Україні | ${t.site.name}`;
 const description =
-  `${m.name} — ${headParts}.` +
-  (sizeStr ? ` Формат слябу: ${sizeStr}.` : "") +
-  ` Наявність: ${statusWord}, ${statusCity}. Запит КП через ${t.site.name}.`;
+  `${m.name} — ${typeL}, колекція ${collection}, обробка ${finishText}, товщина ${thicknessText}. ` +
+  `${availText}. Поставка під замовлення по Україні. Ціна ${priceText}. ${t.site.name}, ${BUSINESS.city}.`;
 
 const price = formatPriceM2(m.priceFromEurM2);
 const jsonLd = [productJsonLd(m, siteUrl), breadcrumbJsonLd(m, siteUrl)];
@@ -90,7 +95,7 @@ const kpData = {
 };
 ---
 
-<Base title={title} description={description} jsonLd={jsonLd} ogImage={ogImage}>
+<Base title={title} description={description} jsonLd={jsonLd} ogImage={ogImage} ogType="product">
   <div class="mx-auto max-w-7xl lg:grid lg:grid-cols-[55%_45%] lg:items-start">
     <div class="lg:sticky lg:top-0">
       {/* Галерея: hero = фото 1; мініатюри перемикають hero (PHASE1_BRIEF §1: «у картці всі три»). */}
