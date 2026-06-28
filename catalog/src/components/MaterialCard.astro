@@ -23,6 +23,7 @@ const price = formatPriceM2(m.priceFromEurM2);
   data-line={m.line}
   data-finish={m.finishes.join(" ")}
   data-color={materialColors(m).join(" ")}
+  data-thickness={m.thicknesses_mm.join(" ")}
   data-price={m.priceFromEurM2 ?? ""}
   data-name={m.name}
 >

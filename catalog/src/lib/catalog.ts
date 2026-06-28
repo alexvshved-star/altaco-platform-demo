@@ -152,6 +152,70 @@ export interface Facet {
   values: { value: string; label: string; count: number }[];
 }
 
+// ── Канонічні таксономії: ФІКСОВАНИЙ склад і порядок, показуються завжди (з 0 теж).
+// Належність позиції та лічильник (N) НІКОЛИ не вшиваються в розмітку — рахуються з
+// атрибутів матеріалів. Підвʼязати до реального складу = просто оновити дані матеріалів.
+interface TaxoEntry { value: string; label: string; }
+
+const TYPE_TAXONOMY: TaxoEntry[] = [
+  { value: "sm-quartz", label: "sm кварц" },
+  { value: "sm-marble", label: "sm мармур" },
+  { value: "marble", label: "мармур" },
+  { value: "granite", label: "граніт" },
+  { value: "quartzite", label: "кварцит" },
+  { value: "labradorite", label: "лабрадорит" },
+  { value: "travertine", label: "травертин" },
+  { value: "onyx", label: "онікс" },
+];
+const COLLECTION_TAXONOMY: TaxoEntry[] = [
+  { value: "bagnara-selection", label: "Bagnara Selection" },
+  { value: "santa-margherita", label: "Santa Margherita" },
+  { value: "italian-stone", label: "Italian Stone" },
+];
+const COLOR_TAXONOMY: TaxoEntry[] = [
+  { value: "white", label: "Білий" },
+  { value: "beige", label: "Бежевий" },
+  { value: "grey", label: "Сірий" },
+  { value: "dark", label: "Чорний" },
+  { value: "brown", label: "Коричневий" },
+  { value: "gold", label: "Золотистий" },
+  { value: "green", label: "Зелений" },
+  { value: "blue", label: "Синій" },
+  { value: "red", label: "Червоний" },
+];
+const FINISH_TAXONOMY: TaxoEntry[] = [
+  { value: "polished", label: "полірований" },
+  { value: "satinato", label: "сатин (satinato)" },
+  { value: "spazzolato", label: "браширований (spazzolato)" },
+  { value: "sm-silk", label: "sm шовк (матовий)" },
+  { value: "levigato", label: "матовий (levigato)" },
+  { value: "pec", label: "структурований (P.E.C)" },
+  { value: "raw", label: "пильний (не оброблений)" },
+];
+const THICKNESS_TAXONOMY: TaxoEntry[] = [
+  { value: "20", label: "20 мм" },
+  { value: "30", label: "30 мм" },
+];
+
+const toLabelMap = (t: TaxoEntry[]) => new Map(t.map((e) => [e.value, e.label]));
+const TYPE_MAP = toLabelMap(TYPE_TAXONOMY);
+const COLOR_MAP = toLabelMap(COLOR_TAXONOMY);
+const FINISH_MAP = toLabelMap(FINISH_TAXONOMY);
+
+export function typeLabel(t: string): string {
+  return TYPE_MAP.get(t) ?? t.replace(/_/g, " ");
+}
+export function finishLabel(f: string): string {
+  return FINISH_MAP.get(f) ?? f;
+}
+export function colorLabel(v: string): string {
+  return COLOR_MAP.get(v) ?? v;
+}
+/** Кольорові теги матеріалу (лише ті, що є в канонічній палітрі). */
+export function materialColors(m: Material): string[] {
+  return m.tags.filter((tag) => COLOR_MAP.has(tag));
+}
+
 function countBy(materials: Material[], pick: (m: Material) => string[]): Map<string, number> {
   const counts = new Map<string, number>();
   for (const m of materials) {
@@ -160,73 +224,32 @@ function countBy(materials: Material[], pick: (m: Material) => string[]): Map<st
   return counts;
 }
 
-function facet(
+/** Канонічний фасет: повна таксономія в заданому порядку, лічильник із даних (0 дозволено). */
+function canonicalFacet(
   key: string,
   label: string,
   placeholder: string,
+  taxonomy: TaxoEntry[],
   materials: Material[],
   pick: (m: Material) => string[],
-  labelFor: (v: string) => string = (v) => v,
-): Facet | null {
+): Facet {
   const counts = countBy(materials, pick);
-  if (counts.size < 2) return null; // фільтр з одним значенням марний
-  const values = [...counts.entries()]
-    .map(([value, count]) => ({ value, label: labelFor(value), count }))
-    .sort((a, b) => a.label.localeCompare(b.label, "uk"));
-  return { key, label, placeholder, values };
+  return {
+    key,
+    label,
+    placeholder,
+    values: taxonomy.map((e) => ({ value: e.value, label: e.label, count: counts.get(e.value) ?? 0 })),
+  };
 }
 
 export function getFacets(materials: Material[] = getMaterials()): Facet[] {
-  const facets: Array<Facet | null> = [
-    facet("type", "Тип каменю", "Усі типи каменю", materials, (m) => [m.type], typeLabel),
-    facet("line", "Виробник / колекція", "Усі колекції", materials, (m) => [m.line], getLineName),
-    facet("finish", "Обробка поверхні", "Усі види обробки", materials, (m) => m.finishes, finishLabel),
-    facet("color", "Колір", "Усі кольори", materials, materialColors, colorLabel),
+  return [
+    canonicalFacet("type", "Тип каменю", "Усі типи каменю", TYPE_TAXONOMY, materials, (m) => [m.type]),
+    canonicalFacet("line", "Виробник / колекція", "Усі колекції", COLLECTION_TAXONOMY, materials, (m) => [m.line]),
+    canonicalFacet("finish", "Обробка поверхні", "Усі види обробки", FINISH_TAXONOMY, materials, (m) => m.finishes),
+    canonicalFacet("color", "Колір", "Усі кольори", COLOR_TAXONOMY, materials, materialColors),
+    canonicalFacet("thickness", "Товщина", "Усі товщини", THICKNESS_TAXONOMY, materials, (m) => m.thicknesses_mm.map(String)),
   ];
-  return facets.filter((f): f is Facet => f !== null);
-}
-
-// Колір — проєкція тегів (схему даних не міняємо; теги лишаються в JSON).
-// Лише ці ключі стають значеннями фільтра; службові теги (granite, kitchen…) — ні.
-const COLOR_LABELS: Record<string, string> = {
-  white: "Білий",
-  grey: "Сірий",
-  dark: "Чорний",
-  blue: "Синій",
-  gold: "Золотистий",
-};
-/** Кольорові теги матеріалу (у порядку оголошення в даних). */
-export function materialColors(m: Material): string[] {
-  return m.tags.filter((tag) => tag in COLOR_LABELS);
-}
-export function colorLabel(v: string): string {
-  return COLOR_LABELS[v] ?? v;
-}
-
-// Людиночитні підписи для технічних значень контракту (UA).
-const TYPE_LABELS: Record<string, string> = {
-  natural_marble: "Натуральний мармур",
-  natural_granite: "Натуральний граніт",
-  natural_quartzite: "Натуральний кварцит",
-  engineered_quartz: "Кварцагломерат",
-  engineered_marble: "Engineered marble",
-};
-export function typeLabel(t: string): string {
-  return TYPE_LABELS[t] ?? t.replace(/_/g, " ");
-}
-
-const FINISH_LABELS: Record<string, string> = {
-  polished: "Полірований",
-  honed: "Шліфований",
-  leathered: "Шкіряний (leathered)",
-  brushed: "Брашований",
-  matte: "Матовий",
-  satinato: "Сатинований (satinato)",
-  levigato: "Лощений (levigato)",
-  pec: "Структурований (P.E.C.)",
-};
-export function finishLabel(f: string): string {
-  return FINISH_LABELS[f] ?? f;
 }
 
 /** Змістовний alt: «[Назва] — [тип], поверхня [фініш], ALTACO» — без загального «фото/камінь». */

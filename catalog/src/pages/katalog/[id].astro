@@ -301,7 +301,7 @@ const kpData = {
     };
     // КАНОНІЧНА формула (одна для картки, модалки, PDF): Площа × Кількість × Ціна/м²,
     // округлення до цілого євро на виводі. Збігається зі slabTotal() у format.ts.
-    const total = (area: number, qty: number, price: number) => Math.round(area * qty * price);
+    const total = (area: number, qty: number, price: number) => Math.round((area * qty * price) / 10) * 10;
     const eur = (n: number) => `€${n.toLocaleString("uk-UA")}`;
     const num2 = (n: number) => n.toLocaleString("uk-UA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 

@@ -38,7 +38,7 @@ export function slabAreaM2(slabSize: { w: number; h: number } | undefined): numb
 }
 
 export function slabTotal(areaM2: number, qty: number, pricePerM2: number): number {
-  return Math.round(areaM2 * qty * pricePerM2);
+  return Math.round((areaM2 * qty * pricePerM2) / 10) * 10; // до найближчих 10 €
 }
 
 export function slabPricing(

@@ -12,6 +12,7 @@ interface RawMaterial {
   finish?: string;
   price_eur_m2: number;
   tags?: string[];
+  thicknesses_mm?: number[];
   published: boolean;
 }
 
@@ -56,13 +57,14 @@ test.describe("Каталог", () => {
         const value = (await opt.getAttribute("value"))!;
         await facet.selectOption(value);
         // очікування з контракту: скільки published мають це значення фасета
-        const COLOR_KEYS = ["white", "grey", "dark", "blue", "gold"];
+        const COLOR_KEYS = ["white", "beige", "grey", "dark", "brown", "gold", "green", "blue", "red"];
         const expected = published.filter((m) => {
           const raw =
             key === "type" ? [m.type]
             : key === "line" ? [m.line]
             : key === "finish" ? (m.finish ? [m.finish] : [])
             : key === "color" ? (m.tags ?? []).filter((tg) => COLOR_KEYS.includes(tg))
+            : key === "thickness" ? (m.thicknesses_mm ?? []).map(String)
             : [];
           return raw.includes(value);
         }).length;
