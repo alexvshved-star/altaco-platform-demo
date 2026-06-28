@@ -444,7 +444,20 @@ const kpData = {
           ],
         };
 
-        pdfMake.createPdf(docDefinition).download(`KP-${data.id}.pdf`);
+        // Завантаження cross-browser: не покладаємось на внутрішній pdfmake .download()
+        // (після await-ів user-gesture розірвано — Chrome ріже його блокувальник попапів/
+        // завантажень; Safari пропускає). Беремо blob і клікаємо власний <a download>.
+        pdfMake.createPdf(docDefinition).getBlob((blob: Blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `KP-${data.id}.pdf`;
+          a.style.display = "none";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+        });
         dialog!.close();
       } finally {
         genBtn.disabled = false;
