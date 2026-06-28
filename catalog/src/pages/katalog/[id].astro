@@ -445,19 +445,19 @@ const kpData = {
         };
 
         // Завантаження cross-browser: не покладаємось на внутрішній pdfmake .download()
-        // (після await-ів user-gesture розірвано — Chrome ріже його блокувальник попапів/
-        // завантажень; Safari пропускає). Беремо blob і клікаємо власний <a download>.
-        pdfMake.createPdf(docDefinition).getBlob((blob: Blob) => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `KP-${data.id}.pdf`;
-          a.style.display = "none";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 4000);
-        });
+        // (Chrome ріже його шлях saveAs). У pdfmake 0.3.x getBlob() — async і ПОВЕРТАЄ
+        // Promise<Blob> (колбек ігнорується), тож await-имо blob і клікаємо власний
+        // <a download> з object URL. Без window.open.
+        const blob: Blob = await pdfMake.createPdf(docDefinition).getBlob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `KP-${data.id}.pdf`;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
         dialog!.close();
       } finally {
         genBtn.disabled = false;
